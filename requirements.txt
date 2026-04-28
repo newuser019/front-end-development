@@ -1,0 +1,5 @@
+Flask>=2.3.3
+flask-cors>=4.0.0
+mysql-connector-python>=8.0.33
+python-dotenv>=1.0.0
+#pip install flask flask-cors python-dotenv mysql-connector-python -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn

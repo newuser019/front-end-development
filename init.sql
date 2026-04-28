@@ -1,0 +1,100 @@
+-- 患者表
+CREATE TABLE IF NOT EXISTS `patients` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `hospitalization_id` VARCHAR(50) NOT NULL UNIQUE COMMENT '住院号',
+    `name` VARCHAR(50) NOT NULL COMMENT '姓名',
+    `gender` VARCHAR(10) NOT NULL COMMENT '性别',
+    `age` INT NOT NULL COMMENT '年龄',
+    `diagnosis` VARCHAR(200) NOT NULL COMMENT '临床诊断',
+    `surgery_name` VARCHAR(200) NOT NULL COMMENT '手术名称',
+    `surgery_date` DATE NOT NULL COMMENT '手术日期',
+    `surgeon` VARCHAR(50) DEFAULT NULL COMMENT '主刀医生',
+    `anesthesia_type` VARCHAR(50) DEFAULT NULL COMMENT '麻醉方式',
+    `incision_type` VARCHAR(50) DEFAULT NULL COMMENT '切口类型',
+    `recovery_stage` VARCHAR(50) DEFAULT '术后早期' COMMENT '康复阶段',
+    `risk_level` VARCHAR(20) DEFAULT '中危' COMMENT '风险等级',
+    `medical_history` TEXT COMMENT '既往病史',
+    `notes` TEXT COMMENT '备注',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    INDEX `idx_hospitalization` (`hospitalization_id`),
+    INDEX `idx_name` (`name`),
+    INDEX `idx_stage` (`recovery_stage`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='患者信息表';
+
+-- 康复行为监测表
+CREATE TABLE IF NOT EXISTS `monitors` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `record_no` VARCHAR(50) NOT NULL UNIQUE COMMENT '记录编号',
+    `patient_id` INT NOT NULL COMMENT '患者ID',
+    `patient_name` VARCHAR(50) NOT NULL COMMENT '患者姓名',
+    `hospitalization_id` VARCHAR(50) NOT NULL COMMENT '住院号',
+    `training_type` VARCHAR(50) NOT NULL COMMENT '训练类型',
+    `monitor_datetime` DATETIME NOT NULL COMMENT '监测时间',
+    `duration_minutes` INT DEFAULT NULL COMMENT '执行时长(分钟)',
+    `execution_times` INT DEFAULT NULL COMMENT '执行次数/组数',
+    `intensity` VARCHAR(20) DEFAULT NULL COMMENT '训练强度',
+    `quality` VARCHAR(20) DEFAULT NULL COMMENT '完成质量',
+    `cooperation` VARCHAR(20) DEFAULT NULL COMMENT '患者配合度',
+    `spo2` INT DEFAULT NULL COMMENT '训练中血氧(%)',
+    `heart_rate` INT DEFAULT NULL COMMENT '训练后心率(次/分)',
+    `adverse_reaction` VARCHAR(100) DEFAULT NULL COMMENT '不良反应',
+    `nurse_observation` TEXT COMMENT '护理观察记录',
+    `nurse_name` VARCHAR(50) DEFAULT '张楠' COMMENT '指导护士',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    INDEX `idx_patient` (`patient_id`),
+    INDEX `idx_type` (`training_type`),
+    INDEX `idx_datetime` (`monitor_datetime`),
+    FOREIGN KEY (`patient_id`) REFERENCES `patients`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='康复行为监测记录表';
+
+-- 效果指标评估表
+CREATE TABLE IF NOT EXISTS `evaluations` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `evaluate_no` VARCHAR(50) NOT NULL UNIQUE COMMENT '评估编号',
+    `patient_id` INT NOT NULL COMMENT '患者ID',
+    `patient_name` VARCHAR(50) NOT NULL COMMENT '患者姓名',
+    `evaluate_date` DATE NOT NULL COMMENT '评估日期',
+    `spo2` INT DEFAULT NULL COMMENT '血氧饱和度(%)',
+    `respiratory_rate` INT DEFAULT NULL COMMENT '呼吸频率(次/分)',
+    `vital_capacity` INT DEFAULT NULL COMMENT '肺活量(mL)',
+    `mip` INT DEFAULT NULL COMMENT '最大吸气压(cmH2O)',
+    `six_min_walk` INT DEFAULT NULL COMMENT '6分钟步行距离(m)',
+    `pain_score` INT DEFAULT NULL COMMENT '疼痛评分(0-10)',
+    `cough_effectiveness` VARCHAR(20) DEFAULT NULL COMMENT '咳嗽有效性',
+    `sputum_property` VARCHAR(50) DEFAULT NULL COMMENT '痰液性状',
+    `activity_endurance` VARCHAR(20) DEFAULT NULL COMMENT '活动耐力评级',
+    `result` VARCHAR(50) DEFAULT NULL COMMENT '评估结果',
+    `analysis_note` TEXT COMMENT '评估分析说明',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    INDEX `idx_patient` (`patient_id`),
+    INDEX `idx_date` (`evaluate_date`),
+    FOREIGN KEY (`patient_id`) REFERENCES `patients`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='效果指标评估表';
+
+-- 溯源分析表
+CREATE TABLE IF NOT EXISTS `traces` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `analysis_no` VARCHAR(50) NOT NULL UNIQUE COMMENT '分析编号',
+    `theme` VARCHAR(200) NOT NULL COMMENT '分析主题',
+    `analysis_type` VARCHAR(50) DEFAULT NULL COMMENT '分析类型',
+    `target_type` VARCHAR(20) DEFAULT NULL COMMENT '分析对象类型',
+    `patient_ids` TEXT COMMENT '关联患者ID列表(逗号分隔)',
+    `diagnosis_filter` VARCHAR(100) DEFAULT NULL COMMENT '诊断类型筛选',
+    `start_date` DATE DEFAULT NULL COMMENT '分析开始日期',
+    `end_date` DATE DEFAULT NULL COMMENT '分析结束日期',
+    `behavior_type` VARCHAR(50) DEFAULT NULL COMMENT '康复行为类型',
+    `effect_index` VARCHAR(50) DEFAULT NULL COMMENT '效果指标选择',
+    `analysis_dimension` VARCHAR(50) DEFAULT NULL COMMENT '分析维度',
+    `output_format` VARCHAR(50) DEFAULT NULL COMMENT '报告输出格式',
+    `purpose` TEXT COMMENT '分析目的说明',
+    `status` VARCHAR(20) DEFAULT '进行中' COMMENT '状态',
+    `created_by` VARCHAR(50) DEFAULT '张楠' COMMENT '分析人',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    INDEX `idx_type` (`analysis_type`),
+    INDEX `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='溯源分析记录表';

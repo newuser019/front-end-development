@@ -1,0 +1,3321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心胸围术期肺康复护理行为监测与效果溯源分析平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "SimSun", sans-serif;
+        }
+
+        body {
+            background: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .app-window {
+            width: 1200px;
+            background: #f0f0f0;
+            border: 1px solid #333;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 标题栏 */
+        .title-bar {
+            background: linear-gradient(180deg, #2a5298 0%, #1e3c72 100%);
+            color: white;
+            padding: 6px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 32px;
+        }
+
+        .title-bar-text {
+            font-size: 13px;
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .title-bar-text i {
+            font-size: 14px;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 2px;
+        }
+
+        .window-controls button {
+            width: 26px;
+            height: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, #f0f0f0 0%, #c0c0c0 100%);
+            border: 1px solid #888;
+            border-radius: 0;
+        }
+
+        .window-controls button:hover {
+            background: linear-gradient(180deg, #fff 0%, #d0d0d0 100%);
+        }
+
+        .window-controls .btn-minimize {
+            font-weight: bold;
+        }
+
+        .window-controls .btn-maximize {
+            position: relative;
+        }
+
+        .window-controls .btn-maximize::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border: 2px solid #333;
+            display: block;
+        }
+
+        .window-controls .btn-close {
+            background: linear-gradient(180deg, #f0a0a0 0%, #c06060 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .window-controls .btn-close:hover {
+            background: linear-gradient(180deg, #ff6666 0%, #cc3333 100%);
+        }
+
+        /* 主内容区 */
+        .main-content {
+            background: #e8e8e8;
+            min-height: 600px;
+        }
+
+        /* 信息栏 */
+        .info-bar {
+            background: #f5f5f5;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .user-info i {
+            color: #1e3c72;
+        }
+
+        .db-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .db-status .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #28a745;
+            border-radius: 50%;
+        }
+
+        .db-status span {
+            color: #28a745;
+        }
+
+        /* 导航栏 */
+        .nav-bar {
+            background: linear-gradient(180deg, #4a7fc4 0%, #2a5298 100%);
+            padding: 0;
+            display: flex;
+            border-bottom: 2px solid #1e3c72;
+        }
+
+        .nav-item {
+            padding: 10px 25px;
+            color: white;
+            cursor: pointer;
+            font-size: 13px;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(180deg, #1e3c72 0%, #162d50 100%);
+        }
+
+        /* 模块标题 */
+        .module-header {
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f0f0f0;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .module-title {
+            font-size: 14px;
+            color: #1e3c72;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: bold;
+        }
+
+        .btn-back {
+            background: linear-gradient(180deg, #f8f8f8 0%, #e0e0e0 100%);
+            border: 1px solid #999;
+            padding: 5px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #333;
+        }
+
+        .btn-back:hover {
+            background: linear-gradient(180deg, #fff 0%, #e8e8e8 100%);
+        }
+
+        /* 工具栏 */
+        .toolbar {
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .toolbar-left {
+            display: flex;
+            gap: 8px;
+        }
+
+        .toolbar-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-toolbar {
+            background: linear-gradient(180deg, #f8f8f8 0%, #e0e0e0 100%);
+            border: 1px solid #999;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #333;
+        }
+
+        .btn-toolbar:hover {
+            background: linear-gradient(180deg, #fff 0%, #e8e8e8 100%);
+        }
+
+        .btn-toolbar.primary {
+            background: linear-gradient(180deg, #5a9fd4 0%, #2a5298 100%);
+            color: white;
+            border-color: #1e3c72;
+        }
+
+        .btn-toolbar.primary:hover {
+            background: linear-gradient(180deg, #6ab0e5 0%, #3a62a8 100%);
+        }
+
+        .filter-select {
+            padding: 5px 10px;
+            border: 1px solid #999;
+            font-size: 12px;
+            min-width: 120px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box input {
+            padding: 5px 10px;
+            border: 1px solid #999;
+            font-size: 12px;
+            width: 160px;
+        }
+
+        .search-box button {
+            background: linear-gradient(180deg, #f8f8f8 0%, #e0e0e0 100%);
+            border: 1px solid #999;
+            border-left: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        /* 数据表格 */
+        .data-table-container {
+            padding: 10px 15px;
+            background: #e8e8e8;
+            /* 新增：超出时出现横向滚动条 */
+            overflow-x: auto;
+            /* 让表格底部与分页之间有一条统一的分隔线 */
+            border-bottom: 1px solid #ccc;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            background: white;
+            border: 1px solid #999;
+        }
+
+        .data-table th {
+            background: linear-gradient(180deg, #4a7fc4 0%, #2a5298 100%);
+            color: white;
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: normal;
+            border-right: 1px solid #3a6ab0;
+            /* 新增：文本不换行 */
+            white-space: nowrap;
+        }
+
+        .data-table th:last-child {
+            border-right: none;
+        }
+
+        .data-table td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            border-right: 1px solid #eee;
+            color: #333;
+            /* 新增：文本不换行 */
+            white-space: nowrap;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #f5f8fc;
+        }
+
+        .data-table tr:hover {
+            background: #e3f2fd;
+        }
+
+        .data-table tr.selected {
+            background: #bbdefb;
+        }
+
+        .data-table tr.selected td {
+            color: #1e3c72;
+            font-weight: bold;
+        }
+
+        /* 状态标签 */
+        .status-tag {
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 11px;
+            display: inline-block;
+        }
+
+        .status-tag.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-tag.in-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-tag.pending {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-tag.excellent {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-tag.good {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .status-tag.normal {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .status-tag.poor {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* 等级标签 */
+        .level-tag {
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 11px;
+            display: inline-block;
+        }
+
+        .level-tag.high {
+            background: #dc3545;
+            color: white;
+        }
+
+        .level-tag.medium {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .level-tag.low {
+            background: #28a745;
+            color: white;
+        }
+
+        /* 分页 */
+        .pagination {
+            padding: 12px 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            background: #f0f0f0;
+            border-top: 1px solid #ccc;
+        }
+
+        .pagination button {
+            background: linear-gradient(180deg, #f8f8f8 0%, #e0e0e0 100%);
+            border: 1px solid #999;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            min-width: 28px;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination button:hover {
+            background: linear-gradient(180deg, #fff 0%, #e8e8e8 100%);
+        }
+
+        .pagination button.active {
+            background: linear-gradient(180deg, #2a5298 0%, #1e3c72 100%);
+            color: white;
+            border-color: #1e3c72;
+        }
+
+        .pagination-info {
+            margin-left: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* 弹窗 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #f0f0f0;
+            border: 1px solid #333;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            min-width: 600px;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(180deg, #2a5298 0%, #1e3c72 100%);
+            color: white;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 13px;
+            font-weight: normal;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+            background: #f5f5f5;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .form-group label .required {
+            color: #dc3545;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid #999;
+            font-size: 12px;
+            background: white;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .modal-footer {
+            padding: 12px 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            background: #e8e8e8;
+            border-top: 1px solid #ccc;
+        }
+
+        .btn-modal {
+            padding: 6px 20px;
+            cursor: pointer;
+            font-size: 12px;
+            border: 1px solid #999;
+        }
+
+        .btn-modal.primary {
+            background: linear-gradient(180deg, #5a9fd4 0%, #2a5298 100%);
+            color: white;
+            border-color: #1e3c72;
+        }
+
+        .btn-modal.secondary {
+            background: linear-gradient(180deg, #f8f8f8 0%, #e0e0e0 100%);
+            color: #333;
+        }
+
+        /* 操作链接 */
+        .action-link {
+            color: #2a5298;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-right: 8px;
+        }
+
+        .action-link:hover {
+            color: #1e3c72;
+        }
+
+        /* 首页样式 */
+        .home-container {
+            padding: 30px;
+            display: none;
+        }
+
+        .home-container.active {
+            display: block;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .welcome-section h2 {
+            color: #1e3c72;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-section p {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .module-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .module-card {
+            background: white;
+            border: 1px solid #ccc;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .module-card:hover {
+            border-color: #2a5298;
+            box-shadow: 0 4px 12px rgba(42, 82, 152, 0.2);
+        }
+
+        .module-card h3 {
+            color: #1e3c72;
+            font-size: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .module-card p {
+            color: #666;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .module-card .card-stats {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 20px;
+        }
+
+        .card-stats .stat-item {
+            font-size: 12px;
+        }
+
+        .card-stats .stat-value {
+            color: #2a5298;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .card-stats .stat-label {
+            color: #999;
+        }
+
+        /* 页面容器 */
+        .page-container {
+            display: none;
+            /* 固定最小高度，避免切换时高度跳动 */
+            min-height: 550px;
+            /* 与主内容区背景相同，保证视觉连贯 */
+            background: #e8e8e8;
+            /* 继承父容器宽度 */
+            width: 100%;
+        }
+
+        .page-container.active {
+            display: block;
+        }
+
+        /* 详情弹窗表格 */
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .detail-table th {
+            background: #e8e8e8;
+            padding: 8px 12px;
+            text-align: left;
+            width: 120px;
+            border: 1px solid #ccc;
+            color: #333;
+        }
+
+        .detail-table td {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            background: white;
+        }
+
+        /* 确认弹窗 */
+        .confirm-content {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .confirm-content i {
+            font-size: 48px;
+            color: #ffc107;
+            margin-bottom: 15px;
+        }
+
+        .confirm-content p {
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-window">
+        <!-- 标题栏 -->
+        <div class="title-bar">
+            <div class="title-bar-text">
+                <i class="fa fa-heartbeat"></i>
+                心胸围术期肺康复护理行为监测与效果溯源分析平台
+            </div>
+            <div class="window-controls">
+                <button class="btn-minimize" title="最小化">—</button>
+                <button class="btn-maximize" title="最大化"></button>
+                <button class="btn-close" title="关闭">×</button>
+            </div>
+        </div>
+
+        <!-- 主内容 -->
+        <div class="main-content">
+            <!-- 信息栏 -->
+            <div class="info-bar">
+                <div class="user-info">
+                    <i class="fa fa-user"></i>
+                    当前用户：张楠
+                </div>
+                <div class="db-status">
+                    <i class="fa fa-database"></i>
+                    数据库状态：<span class="status-dot"></span><span>已连接</span>
+                </div>
+            </div>
+
+            <!-- 导航栏 -->
+            <div class="nav-bar">
+                <div class="nav-item active" data-page="home">
+                    <i class="fa fa-home"></i> 系统首页
+                </div>
+                <div class="nav-item" data-page="patient">
+                    <i class="fa fa-user-injured"></i> 患者康复管理
+                </div>
+                <div class="nav-item" data-page="monitor">
+                    <i class="fa fa-clipboard-check"></i> 康复行为监测
+                </div>
+                <div class="nav-item" data-page="evaluate">
+                    <i class="fa fa-chart-line"></i> 效果指标评估
+                </div>
+                <div class="nav-item" data-page="trace">
+                    <i class="fa fa-search"></i> 溯源分析查询
+                </div>
+            </div>
+
+            <!-- 首页 -->
+            <div class="home-container active" id="page-home">
+                <div class="welcome-section">
+                    <h2>欢迎使用心胸围术期肺康复护理行为监测与效果溯源分析平台</h2>
+                    <p>本平台用于记录和追踪心胸外科围术期患者的肺康复护理行为，评估康复效果，实现护理行为与康复结果的溯源分析</p>
+                </div>
+                <div class="module-cards">
+                    <div class="module-card" data-page="patient">
+                        <h3><i class="fa fa-user-injured"></i> 患者康复管理</h3>
+                        <p>管理围术期患者基本信息，包括诊断、手术信息、康复阶段等，全面掌握患者康复状态</p>
+                        <div class="card-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">26</div>
+                                <div class="stat-label">在管患者</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">8</div>
+                                <div class="stat-label">今日新增</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-card" data-page="monitor">
+                        <h3><i class="fa fa-clipboard-check"></i> 康复行为监测</h3>
+                        <p>记录患者肺康复训练执行情况，包括呼吸训练、咳嗽排痰、早期下床活动等康复行为</p>
+                        <div class="card-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">152</div>
+                                <div class="stat-label">本周记录</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">94%</div>
+                                <div class="stat-label">执行率</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-card" data-page="evaluate">
+                        <h3><i class="fa fa-chart-line"></i> 效果指标评估</h3>
+                        <p>追踪评估康复效果指标，包括肺功能、血氧饱和度、呼吸频率等关键指标变化</p>
+                        <div class="card-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">89</div>
+                                <div class="stat-label">评估记录</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">优良</div>
+                                <div class="stat-label">整体评价</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-card" data-page="trace">
+                        <h3><i class="fa fa-search"></i> 溯源分析查询</h3>
+                        <p>分析护理行为与康复效果的关联性，追溯护理干预对康复结果的影响</p>
+                        <div class="card-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">36</div>
+                                <div class="stat-label">分析报告</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">本月生成</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 患者康复管理页面 -->
+            <div class="page-container" id="page-patient">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa fa-user-injured"></i> 患者康复管理
+                    </div>
+                    <button class="btn-back" onclick="goHome()">
+                        <i class="fa fa-home"></i> 返回主页
+                    </button>
+                </div>
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <button class="btn-toolbar primary" onclick="openModal('addPatient')">
+                            <i class="fa fa-plus"></i> 新增患者
+                        </button>
+                        <button class="btn-toolbar" onclick="deleteSelected('patient')">
+                            <i class="fa fa-trash"></i> 删除
+                        </button>
+                        <button class="btn-toolbar" onclick="exportData('patient')">
+                            <i class="fa fa-download"></i> 导出
+                        </button>
+                    </div>
+                    <div class="toolbar-right">
+                        <select class="filter-select" id="patientStageFilter">
+                            <option value="">全部阶段</option>
+                            <option value="术前准备期">术前准备期</option>
+                            <option value="术后早期">术后早期</option>
+                            <option value="康复期">康复期</option>
+                        </select>
+                        <div class="search-box">
+                            <input type="text" placeholder="输入姓名或住院号搜索" id="patientSearch">
+                            <button onclick="searchPatient()"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table-container">
+                    <table class="data-table" id="patientTable">
+                        <thead>
+                            <tr>
+                                <th style="width:40px;">序号</th>
+                                <th style="width:100px;">住院号</th>
+                                <th style="width:70px;">姓名</th>
+                                <th style="width:40px;">性别</th>
+                                <th style="width:45px;">年龄</th>
+                                <th style="width:120px;">诊断</th>
+                                <th style="width:130px;">手术名称</th>
+                                <th style="width:90px;">手术日期</th>
+                                <th style="width:70px;">术后天数</th>
+                                <th style="width:90px;">康复阶段</th>
+                                <th style="width:70px;">风险等级</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="selected">
+                                <td>1</td>
+                                <td>XK-2024-0156</td>
+                                <td>王建华</td>
+                                <td>男</td>
+                                <td>58</td>
+                                <td>肺癌(右上叶)</td>
+                                <td>胸腔镜右上肺叶切除术</td>
+                                <td>2024-03-18</td>
+                                <td>术后第5天</td>
+                                <td>术后早期</td>
+                                <td><span class="level-tag medium">中危</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewPatient(1)">查看</span>
+                                    <span class="action-link" onclick="editPatient(1)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>XK-2024-0157</td>
+                                <td>李秀英</td>
+                                <td>女</td>
+                                <td>62</td>
+                                <td>冠心病三支病变</td>
+                                <td>冠状动脉旁路移植术</td>
+                                <td>2024-03-15</td>
+                                <td>术后第8天</td>
+                                <td>康复期</td>
+                                <td><span class="level-tag high">高危</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewPatient(2)">查看</span>
+                                    <span class="action-link" onclick="editPatient(2)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>XK-2024-0158</td>
+                                <td>陈志明</td>
+                                <td>男</td>
+                                <td>45</td>
+                                <td>食管癌(中段)</td>
+                                <td>胸腹腔镜食管癌根治术</td>
+                                <td>2024-03-20</td>
+                                <td>术后第3天</td>
+                                <td>术后早期</td>
+                                <td><span class="level-tag medium">中危</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewPatient(3)">查看</span>
+                                    <span class="action-link" onclick="editPatient(3)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>XK-2024-0159</td>
+                                <td>张美玲</td>
+                                <td>女</td>
+                                <td>55</td>
+                                <td>心脏瓣膜病</td>
+                                <td>二尖瓣置换术</td>
+                                <td>2024-03-12</td>
+                                <td>术后第11天</td>
+                                <td>出院准备期</td>
+                                <td><span class="level-tag low">低危</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewPatient(4)">查看</span>
+                                    <span class="action-link" onclick="editPatient(4)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>XK-2024-0160</td>
+                                <td>刘德强</td>
+                                <td>男</td>
+                                <td>67</td>
+                                <td>肺癌(左下叶)</td>
+                                <td>胸腔镜左下肺叶切除术</td>
+                                <td>2024-03-19</td>
+                                <td>术后第4天</td>
+                                <td>术后早期</td>
+                                <td><span class="level-tag high">高危</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewPatient(5)">查看</span>
+                                    <span class="action-link" onclick="editPatient(5)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>XK-2024-0161</td>
+                                <td>赵文静</td>
+                                <td>女</td>
+                                <td>48</td>
+                                <td>纵隔肿瘤</td>
+                                <td>胸腔镜纵隔肿瘤切除术</td>
+                                <td>2024-03-21</td>
+                                <td>术后第2天</td>
+                                <td>术后早期</td>
+                                <td><span class="level-tag low">低危</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewPatient(6)">查看</span>
+                                    <span class="action-link" onclick="editPatient(6)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>XK-2024-0162</td>
+                                <td>孙国庆</td>
+                                <td>男</td>
+                                <td>71</td>
+                                <td>主动脉瘤</td>
+                                <td>升主动脉置换术</td>
+                                <td>2024-03-10</td>
+                                <td>术后第13天</td>
+                                <td>康复期</td>
+                                <td><span class="level-tag high">高危</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewPatient(7)">查看</span>
+                                    <span class="action-link" onclick="editPatient(7)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>XK-2024-0163</td>
+                                <td>周丽华</td>
+                                <td>女</td>
+                                <td>52</td>
+                                <td>肺癌(右中叶)</td>
+                                <td>胸腔镜右中肺叶切除术</td>
+                                <td>2024-03-17</td>
+                                <td>术后第6天</td>
+                                <td>康复期</td>
+                                <td><span class="level-tag medium">中危</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewPatient(8)">查看</span>
+                                    <span class="action-link" onclick="editPatient(8)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>XK-2024-0164</td>
+                                <td>吴明辉</td>
+                                <td>男</td>
+                                <td>60</td>
+                                <td>冠心病双支病变</td>
+                                <td>冠状动脉旁路移植术</td>
+                                <td>2024-03-14</td>
+                                <td>术后第9天</td>
+                                <td>康复期</td>
+                                <td><span class="level-tag medium">中危</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewPatient(9)">查看</span>
+                                    <span class="action-link" onclick="editPatient(9)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>XK-2024-0165</td>
+                                <td>郑晓燕</td>
+                                <td>女</td>
+                                <td>43</td>
+                                <td>气胸</td>
+                                <td>胸腔镜肺大疱切除术</td>
+                                <td>2024-03-22</td>
+                                <td>术后第1天</td>
+                                <td>术后早期</td>
+                                <td><span class="level-tag low">低危</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewPatient(10)">查看</span>
+                                    <span class="action-link" onclick="editPatient(10)">编辑</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button><i class="fa fa-angle-double-left"></i></button>
+                    <button><i class="fa fa-angle-left"></i></button>
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button><i class="fa fa-angle-right"></i></button>
+                    <button><i class="fa fa-angle-double-right"></i></button>
+                    <span class="pagination-info">共 26 条记录 | 第 1/3 页</span>
+                </div>
+            </div>
+
+            <!-- 康复行为监测页面 -->
+            <div class="page-container" id="page-monitor">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa fa-clipboard-check"></i> 康复行为监测
+                    </div>
+                    <button class="btn-back" onclick="goHome()">
+                        <i class="fa fa-home"></i> 返回主页
+                    </button>
+                </div>
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <button class="btn-toolbar primary" onclick="openModal('addMonitor')">
+                            <i class="fa fa-plus"></i> 新增记录
+                        </button>
+                        <button class="btn-toolbar" onclick="deleteSelected('monitor')">
+                            <i class="fa fa-trash"></i> 删除
+                        </button>
+                        <button class="btn-toolbar" onclick="exportData('monitor')">
+                            <i class="fa fa-download"></i> 导出
+                        </button>
+                    </div>
+                    <div class="toolbar-right">
+                        <select class="filter-select" id="monitorTypeFilter">
+                            <option value="">全部类型</option>
+                            <option value="呼吸训练">呼吸训练</option>
+                            <option value="咳嗽排痰">咳嗽排痰</option>
+                            <option value="早期下床活动">早期下床活动</option>
+                            <option value="呼吸功能锻炼">呼吸功能锻炼</option>
+                            <option value="胸部物理治疗">胸部物理治疗</option>
+                        </select>
+                        <div class="search-box">
+                            <input type="text" placeholder="输入患者姓名搜索" id="monitorSearch">
+                            <button onclick="searchMonitor()"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table-container">
+                    <table class="data-table" id="monitorTable">
+                        <thead>
+                            <tr>
+                                <th style="width:40px;">序号</th>
+                                <th style="width:100px;">记录编号</th>
+                                <th style="width:70px;">患者姓名</th>
+                                <th style="width:100px;">住院号</th>
+                                <th style="width:100px;">训练类型</th>
+                                <th style="width:130px;">监测时间</th>
+                                <th style="width:70px;">执行时长</th>
+                                <th style="width:60px;">执行次数</th>
+                                <th style="width:70px;">完成质量</th>
+                                <th style="width:70px;">指导护士</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="selected">
+                                <td>1</td>
+                                <td>KF-2024-0312</td>
+                                <td>王建华</td>
+                                <td>XK-2024-0156</td>
+                                <td>呼吸训练</td>
+                                <td>2024-03-23 08:30</td>
+                                <td>15分钟</td>
+                                <td>3组</td>
+                                <td><span class="status-tag excellent">优秀</span></td>
+                                <td>张楠</td>
+                                <td>
+                                    <span class="action-link" onclick="viewMonitor(1)">查看</span>
+                                    <span class="action-link" onclick="editMonitor(1)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>KF-2024-0313</td>
+                                <td>李秀英</td>
+                                <td>XK-2024-0157</td>
+                                <td>早期下床活动</td>
+                                <td>2024-03-23 09:15</td>
+                                <td>20分钟</td>
+                                <td>2次</td>
+                                <td><span class="status-tag good">良好</span></td>
+                                <td>张楠</td>
+                                <td>
+                                    <span class="action-link" onclick="viewMonitor(2)">查看</span>
+                                    <span class="action-link" onclick="editMonitor(2)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>KF-2024-0314</td>
+                                <td>陈志明</td>
+                                <td>XK-2024-0158</td>
+                                <td>咳嗽排痰</td>
+                                <td>2024-03-23 10:00</td>
+                                <td>10分钟</td>
+                                <td>4组</td>
+                                <td><span class="status-tag normal">一般</span></td>
+                                <td>张楠</td>
+                                <td>
+                                    <span class="action-link" onclick="viewMonitor(3)">查看</span>
+                                    <span class="action-link" onclick="editMonitor(3)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>KF-2024-0315</td>
+                                <td>张美玲</td>
+                                <td>XK-2024-0159</td>
+                                <td>呼吸功能锻炼</td>
+                                <td>2024-03-23 10:30</td>
+                                <td>25分钟</td>
+                                <td>3组</td>
+                                <td><span class="status-tag excellent">优秀</span></td>
+                                <td>张楠</td>
+                                <td>
+                                    <span class="action-link" onclick="viewMonitor(4)">查看</span>
+                                    <span class="action-link" onclick="editMonitor(4)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>KF-2024-0316</td>
+                                <td>刘德强</td>
+                                <td>XK-2024-0160</td>
+                                <td>胸部物理治疗</td>
+                                <td>2024-03-23 11:00</td>
+                                <td>30分钟</td>
+                                <td>1次</td>
+                                <td><span class="status-tag good">良好</span></td>
+                                <td>张楠</td>
+                                <td>
+                                    <span class="action-link" onclick="viewMonitor(5)">查看</span>
+                                    <span class="action-link" onclick="editMonitor(5)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>KF-2024-0317</td>
+                                <td>赵文静</td>
+                                <td>XK-2024-0161</td>
+                                <td>呼吸训练</td>
+                                <td>2024-03-23 14:00</td>
+                                <td>15分钟</td>
+                                <td>3组</td>
+                                <td><span class="status-tag excellent">优秀</span></td>
+                                <td>张楠</td>
+                                <td>
+                                    <span class="action-link" onclick="viewMonitor(6)">查看</span>
+                                    <span class="action-link" onclick="editMonitor(6)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>KF-2024-0318</td>
+                                <td>孙国庆</td>
+                                <td>XK-2024-0162</td>
+                                <td>早期下床活动</td>
+                                <td>2024-03-23 14:30</td>
+                                <td>15分钟</td>
+                                <td>2次</td>
+                                <td><span class="status-tag normal">一般</span></td>
+                                <td>张楠</td>
+                                <td>
+                                    <span class="action-link" onclick="viewMonitor(7)">查看</span>
+                                    <span class="action-link" onclick="editMonitor(7)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>KF-2024-0319</td>
+                                <td>周丽华</td>
+                                <td>XK-2024-0163</td>
+                                <td>咳嗽排痰</td>
+                                <td>2024-03-23 15:00</td>
+                                <td>10分钟</td>
+                                <td>5组</td>
+                                <td><span class="status-tag good">良好</span></td>
+                                <td>张楠</td>
+                                <td>
+                                    <span class="action-link" onclick="viewMonitor(8)">查看</span>
+                                    <span class="action-link" onclick="editMonitor(8)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>KF-2024-0320</td>
+                                <td>吴明辉</td>
+                                <td>XK-2024-0164</td>
+                                <td>呼吸功能锻炼</td>
+                                <td>2024-03-23 15:30</td>
+                                <td>20分钟</td>
+                                <td>3组</td>
+                                <td><span class="status-tag excellent">优秀</span></td>
+                                <td>张楠</td>
+                                <td>
+                                    <span class="action-link" onclick="viewMonitor(9)">查看</span>
+                                    <span class="action-link" onclick="editMonitor(9)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>KF-2024-0321</td>
+                                <td>郑晓燕</td>
+                                <td>XK-2024-0165</td>
+                                <td>呼吸训练</td>
+                                <td>2024-03-23 16:00</td>
+                                <td>10分钟</td>
+                                <td>2组</td>
+                                <td><span class="status-tag poor">待改进</span></td>
+                                <td>张楠</td>
+                                <td>
+                                    <span class="action-link" onclick="viewMonitor(10)">查看</span>
+                                    <span class="action-link" onclick="editMonitor(10)">编辑</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button><i class="fa fa-angle-double-left"></i></button>
+                    <button><i class="fa fa-angle-left"></i></button>
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>4</button>
+                    <button><i class="fa fa-angle-right"></i></button>
+                    <button><i class="fa fa-angle-double-right"></i></button>
+                    <span class="pagination-info">共 152 条记录 | 第 1/16 页</span>
+                </div>
+            </div>
+
+            <!-- 效果指标评估页面 -->
+            <div class="page-container" id="page-evaluate">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa fa-chart-line"></i> 效果指标评估
+                    </div>
+                    <button class="btn-back" onclick="goHome()">
+                        <i class="fa fa-home"></i> 返回主页
+                    </button>
+                </div>
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <button class="btn-toolbar primary" onclick="openModal('addEvaluate')">
+                            <i class="fa fa-plus"></i> 新增评估
+                        </button>
+                        <button class="btn-toolbar" onclick="deleteSelected('evaluate')">
+                            <i class="fa fa-trash"></i> 删除
+                        </button>
+                        <button class="btn-toolbar" onclick="exportData('evaluate')">
+                            <i class="fa fa-download"></i> 导出
+                        </button>
+                    </div>
+                    <div class="toolbar-right">
+                        <select class="filter-select" id="evaluateResultFilter">
+                            <option value="">全部结果</option>
+                            <option value="显著改善">显著改善</option>
+                            <option value="有所改善">有所改善</option>
+                            <option value="基本稳定">基本稳定</option>
+                            <option value="需要关注">需要关注</option>
+                        </select>
+                        <div class="search-box">
+                            <input type="text" placeholder="输入患者姓名搜索" id="evaluateSearch">
+                            <button onclick="searchEvaluate()"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table-container">
+                    <table class="data-table" id="evaluateTable">
+                        <thead>
+                            <tr>
+                                <th style="width:40px;">序号</th>
+                                <th style="width:100px;">评估编号</th>
+                                <th style="width:70px;">患者姓名</th>
+                                <th style="width:100px;">评估时间</th>
+                                <th style="width:70px;">血氧饱和度</th>
+                                <th style="width:70px;">呼吸频率</th>
+                                <th style="width:80px;">肺活量</th>
+                                <th style="width:80px;">6分钟步行</th>
+                                <th style="width:70px;">疼痛评分</th>
+                                <th style="width:80px;">评估结果</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="selected">
+                                <td>1</td>
+                                <td>PG-2024-0089</td>
+                                <td>王建华</td>
+                                <td>2024-03-23</td>
+                                <td>97%</td>
+                                <td>18次/分</td>
+                                <td>2850mL</td>
+                                <td>320m</td>
+                                <td>2分</td>
+                                <td><span class="status-tag completed">显著改善</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewEvaluate(1)">查看</span>
+                                    <span class="action-link" onclick="editEvaluate(1)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>PG-2024-0090</td>
+                                <td>李秀英</td>
+                                <td>2024-03-23</td>
+                                <td>95%</td>
+                                <td>20次/分</td>
+                                <td>2100mL</td>
+                                <td>180m</td>
+                                <td>3分</td>
+                                <td><span class="status-tag in-progress">有所改善</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewEvaluate(2)">查看</span>
+                                    <span class="action-link" onclick="editEvaluate(2)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>PG-2024-0091</td>
+                                <td>陈志明</td>
+                                <td>2024-03-23</td>
+                                <td>94%</td>
+                                <td>22次/分</td>
+                                <td>2300mL</td>
+                                <td>150m</td>
+                                <td>4分</td>
+                                <td><span class="status-tag pending">需要关注</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewEvaluate(3)">查看</span>
+                                    <span class="action-link" onclick="editEvaluate(3)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>PG-2024-0092</td>
+                                <td>张美玲</td>
+                                <td>2024-03-23</td>
+                                <td>98%</td>
+                                <td>16次/分</td>
+                                <td>2650mL</td>
+                                <td>380m</td>
+                                <td>1分</td>
+                                <td><span class="status-tag completed">显著改善</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewEvaluate(4)">查看</span>
+                                    <span class="action-link" onclick="editEvaluate(4)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>PG-2024-0093</td>
+                                <td>刘德强</td>
+                                <td>2024-03-23</td>
+                                <td>93%</td>
+                                <td>24次/分</td>
+                                <td>1950mL</td>
+                                <td>120m</td>
+                                <td>5分</td>
+                                <td><span class="status-tag pending">需要关注</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewEvaluate(5)">查看</span>
+                                    <span class="action-link" onclick="editEvaluate(5)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>PG-2024-0094</td>
+                                <td>赵文静</td>
+                                <td>2024-03-23</td>
+                                <td>96%</td>
+                                <td>19次/分</td>
+                                <td>2500mL</td>
+                                <td>280m</td>
+                                <td>2分</td>
+                                <td><span class="status-tag in-progress">有所改善</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewEvaluate(6)">查看</span>
+                                    <span class="action-link" onclick="editEvaluate(6)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>PG-2024-0095</td>
+                                <td>孙国庆</td>
+                                <td>2024-03-22</td>
+                                <td>94%</td>
+                                <td>21次/分</td>
+                                <td>2200mL</td>
+                                <td>200m</td>
+                                <td>3分</td>
+                                <td><span class="status-tag in-progress">有所改善</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewEvaluate(7)">查看</span>
+                                    <span class="action-link" onclick="editEvaluate(7)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>PG-2024-0096</td>
+                                <td>周丽华</td>
+                                <td>2024-03-22</td>
+                                <td>96%</td>
+                                <td>18次/分</td>
+                                <td>2700mL</td>
+                                <td>350m</td>
+                                <td>2分</td>
+                                <td><span class="status-tag completed">显著改善</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewEvaluate(8)">查看</span>
+                                    <span class="action-link" onclick="editEvaluate(8)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>PG-2024-0097</td>
+                                <td>吴明辉</td>
+                                <td>2024-03-22</td>
+                                <td>95%</td>
+                                <td>19次/分</td>
+                                <td>2450mL</td>
+                                <td>300m</td>
+                                <td>2分</td>
+                                <td><span class="status-tag in-progress">有所改善</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewEvaluate(9)">查看</span>
+                                    <span class="action-link" onclick="editEvaluate(9)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>PG-2024-0098</td>
+                                <td>郑晓燕</td>
+                                <td>2024-03-23</td>
+                                <td>95%</td>
+                                <td>20次/分</td>
+                                <td>2600mL</td>
+                                <td>--</td>
+                                <td>3分</td>
+                                <td><span class="status-tag in-progress">基本稳定</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewEvaluate(10)">查看</span>
+                                    <span class="action-link" onclick="editEvaluate(10)">编辑</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button><i class="fa fa-angle-double-left"></i></button>
+                    <button><i class="fa fa-angle-left"></i></button>
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button><i class="fa fa-angle-right"></i></button>
+                    <button><i class="fa fa-angle-double-right"></i></button>
+                    <span class="pagination-info">共 89 条记录 | 第 1/9 页</span>
+                </div>
+            </div>
+
+            <!-- 溯源分析查询页面 -->
+            <div class="page-container" id="page-trace">
+                <div class="module-header">
+                    <div class="module-title">
+                        <i class="fa fa-search"></i> 溯源分析查询
+                    </div>
+                    <button class="btn-back" onclick="goHome()">
+                        <i class="fa fa-home"></i> 返回主页
+                    </button>
+                </div>
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <button class="btn-toolbar primary" onclick="openModal('addTrace')">
+                            <i class="fa fa-plus"></i> 新建分析
+                        </button>
+                        <button class="btn-toolbar" onclick="deleteSelected('trace')">
+                            <i class="fa fa-trash"></i> 删除
+                        </button>
+                        <button class="btn-toolbar" onclick="exportData('trace')">
+                            <i class="fa fa-download"></i> 导出
+                        </button>
+                    </div>
+                    <div class="toolbar-right">
+                        <select class="filter-select" id="traceTypeFilter">
+                            <option value="">全部类型</option>
+                            <option value="个案分析">个案分析</option>
+                            <option value="对比分析">对比分析</option>
+                            <option value="趋势分析">趋势分析</option>
+                            <option value="关联分析">关联分析</option>
+                        </select>
+                        <div class="search-box">
+                            <input type="text" placeholder="输入分析主题搜索" id="traceSearch">
+                            <button onclick="searchTrace()"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table-container">
+                    <table class="data-table" id="traceTable">
+                        <thead>
+                            <tr>
+                                <th style="width:40px;">序号</th>
+                                <th style="width:100px;">分析编号</th>
+                                <th style="width:180px;">分析主题</th>
+                                <th style="width:80px;">分析类型</th>
+                                <th style="width:70px;">患者姓名</th>
+                                <th style="width:100px;">分析周期</th>
+                                <th style="width:100px;">创建时间</th>
+                                <th style="width:70px;">分析人</th>
+                                <th style="width:70px;">状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="selected">
+                                <td>1</td>
+                                <td>SY-2024-0036</td>
+                                <td>王建华术后呼吸训练效果追踪</td>
+                                <td>个案分析</td>
+                                <td>王建华</td>
+                                <td>2024.03.18-03.23</td>
+                                <td>2024-03-23</td>
+                                <td>张楠</td>
+                                <td><span class="status-tag completed">已完成</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewTrace(1)">查看</span>
+                                    <span class="action-link" onclick="editTrace(1)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>SY-2024-0035</td>
+                                <td>肺叶切除术患者康复行为对比</td>
+                                <td>对比分析</td>
+                                <td>多患者</td>
+                                <td>2024.03.01-03.23</td>
+                                <td>2024-03-22</td>
+                                <td>张楠</td>
+                                <td><span class="status-tag completed">已完成</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewTrace(2)">查看</span>
+                                    <span class="action-link" onclick="editTrace(2)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>SY-2024-0034</td>
+                                <td>李秀英CABG术后康复进展分析</td>
+                                <td>趋势分析</td>
+                                <td>李秀英</td>
+                                <td>2024.03.15-03.23</td>
+                                <td>2024-03-22</td>
+                                <td>张楠</td>
+                                <td><span class="status-tag completed">已完成</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewTrace(3)">查看</span>
+                                    <span class="action-link" onclick="editTrace(3)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>SY-2024-0033</td>
+                                <td>早期下床活动与肺功能改善关联</td>
+                                <td>关联分析</td>
+                                <td>多患者</td>
+                                <td>2024.02.01-03.20</td>
+                                <td>2024-03-21</td>
+                                <td>张楠</td>
+                                <td><span class="status-tag completed">已完成</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewTrace(4)">查看</span>
+                                    <span class="action-link" onclick="editTrace(4)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>SY-2024-0032</td>
+                                <td>陈志明食管癌术后呼吸训练追踪</td>
+                                <td>个案分析</td>
+                                <td>陈志明</td>
+                                <td>2024.03.20-03.23</td>
+                                <td>2024-03-21</td>
+                                <td>张楠</td>
+                                <td><span class="status-tag in-progress">进行中</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewTrace(5)">查看</span>
+                                    <span class="action-link" onclick="editTrace(5)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>SY-2024-0031</td>
+                                <td>高危患者康复训练依从性分析</td>
+                                <td>对比分析</td>
+                                <td>多患者</td>
+                                <td>2024.03.01-03.20</td>
+                                <td>2024-03-20</td>
+                                <td>张楠</td>
+                                <td><span class="status-tag completed">已完成</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewTrace(6)">查看</span>
+                                    <span class="action-link" onclick="editTrace(6)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>SY-2024-0030</td>
+                                <td>咳嗽排痰训练与肺部感染预防</td>
+                                <td>关联分析</td>
+                                <td>多患者</td>
+                                <td>2024.02.15-03.18</td>
+                                <td>2024-03-19</td>
+                                <td>张楠</td>
+                                <td><span class="status-tag completed">已完成</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewTrace(7)">查看</span>
+                                    <span class="action-link" onclick="editTrace(7)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>SY-2024-0029</td>
+                                <td>张美玲瓣膜置换术后康复评估</td>
+                                <td>趋势分析</td>
+                                <td>张美玲</td>
+                                <td>2024.03.12-03.23</td>
+                                <td>2024-03-18</td>
+                                <td>张楠</td>
+                                <td><span class="status-tag completed">已完成</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewTrace(8)">查看</span>
+                                    <span class="action-link" onclick="editTrace(8)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>SY-2024-0028</td>
+                                <td>刘德强高龄患者康复方案效果</td>
+                                <td>个案分析</td>
+                                <td>刘德强</td>
+                                <td>2024.03.19-03.23</td>
+                                <td>2024-03-18</td>
+                                <td>张楠</td>
+                                <td><span class="status-tag in-progress">进行中</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewTrace(9)">查看</span>
+                                    <span class="action-link" onclick="editTrace(9)">编辑</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>SY-2024-0027</td>
+                                <td>呼吸训练频次与血氧改善关系</td>
+                                <td>关联分析</td>
+                                <td>多患者</td>
+                                <td>2024.02.01-03.15</td>
+                                <td>2024-03-16</td>
+                                <td>张楠</td>
+                                <td><span class="status-tag completed">已完成</span></td>
+                                <td>
+                                    <span class="action-link" onclick="viewTrace(10)">查看</span>
+                                    <span class="action-link" onclick="editTrace(10)">编辑</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button><i class="fa fa-angle-double-left"></i></button>
+                    <button><i class="fa fa-angle-left"></i></button>
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>4</button>
+                    <button><i class="fa fa-angle-right"></i></button>
+                    <button><i class="fa fa-angle-double-right"></i></button>
+                    <span class="pagination-info">共 36 条记录 | 第 1/4 页</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增患者弹窗 -->
+    <div class="modal-overlay" id="modal-addPatient">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fa fa-user-plus"></i><span id="patientModalTitle">新增患者</span></h3>
+                <button class="modal-close" onclick="closeModal('addPatient')">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="pat_edit_id" value="">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>住院号 <span class="required">*</span></label>
+                        <input type="text" id="pat_hospitalization_id" placeholder="请输入住院号">
+                    </div>
+                    <div class="form-group">
+                        <label>患者姓名 <span class="required">*</span></label>
+                        <input type="text" id="pat_name" placeholder="请输入患者姓名">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>性别 <span class="required">*</span></label>
+                        <select id="pat_gender">
+                            <option value="">请选择</option>
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>年龄 <span class="required">*</span></label>
+                        <input type="number" id="pat_age" placeholder="请输入年龄">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>临床诊断 <span class="required">*</span></label>
+                        <input type="text" id="pat_diagnosis" placeholder="请输入临床诊断">
+                    </div>
+                    <div class="form-group">
+                        <label>手术名称 <span class="required">*</span></label>
+                        <input type="text" id="pat_surgery_name" placeholder="请输入手术名称">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>手术日期 <span class="required">*</span></label>
+                        <input type="date" id="pat_surgery_date">
+                    </div>
+                    <div class="form-group">
+                        <label>主刀医生 <span class="required">*</span></label>
+                        <input type="text" id="pat_surgeon" placeholder="请输入主刀医生">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>麻醉方式</label>
+                        <select id="pat_anesthesia_type">
+                            <option value="">请选择</option>
+                            <option value="全身麻醉">全身麻醉</option>
+                            <option value="硬膜外麻醉">硬膜外麻醉</option>
+                            <option value="全麻+硬膜外">全麻+硬膜外</option>
+                            <option value="局部麻醉">局部麻醉</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>手术切口类型</label>
+                        <select id="pat_incision_type">
+                            <option value="">请选择</option>
+                            <option value="胸腔镜微创">胸腔镜微创</option>
+                            <option value="正中开胸">正中开胸</option>
+                            <option value="侧开胸">侧开胸</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>康复阶段</label>
+                        <select id="pat_recovery_stage">
+                            <option value="">请选择</option>
+                            <option value="术前准备期">术前准备期</option>
+                            <option value="术后早期">术后早期</option>
+                            <option value="康复期">康复期</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>风险等级评估</label>
+                        <select id="pat_risk_level">
+                            <option value="">请选择</option>
+                            <option value="低危">低危</option>
+                            <option value="中危">中危</option>
+                            <option value="高危">高危</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:2;">
+                        <label>既往病史</label>
+                        <textarea id="pat_medical_history" placeholder="请输入既往病史，如高血压、糖尿病、COPD等"></textarea>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:2;">
+                        <label>备注信息</label>
+                        <textarea id="pat_notes" placeholder="请输入其他需要记录的信息"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal secondary" onclick="closeModal('addPatient')">取消</button>
+                <button class="btn-modal primary" onclick="savePatient()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增康复行为监测弹窗 -->
+    <div class="modal-overlay" id="modal-addMonitor">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fa fa-clipboard-check"></i><span id="monitorModalTitle">新增康复行为监测记录</span></h3>
+                <button class="modal-close" onclick="closeModal('addMonitor')">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="mon_edit_id" value="">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>患者姓名 <span class="required">*</span></label>
+                        <select id="mon_patient_id">
+                            <option value="">请选择患者</option>
+                            <option value="1">王建华 (XK-2024-0156)</option>
+                            <option value="2">李秀英 (XK-2024-0157)</option>
+                            <option value="3">陈志明 (XK-2024-0158)</option>
+                            <option value="4">张美玲 (XK-2024-0159)</option>
+                            <option value="5">刘德强 (XK-2024-0160)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>训练类型 <span class="required">*</span></label>
+                        <select id="mon_training_type">
+                            <option value="">请选择</option>
+                            <option value="呼吸训练">呼吸训练</option>
+                            <option value="咳嗽排痰">咳嗽排痰</option>
+                            <option value="早期下床活动">早期下床活动</option>
+                            <option value="呼吸功能锻炼">呼吸功能锻炼</option>
+                            <option value="胸部物理治疗">胸部物理治疗</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>监测日期 <span class="required">*</span></label>
+                        <input type="date" id="mon_date">
+                    </div>
+                    <div class="form-group">
+                        <label>监测时间 <span class="required">*</span></label>
+                        <input type="time" id="mon_time">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>执行时长(分钟) <span class="required">*</span></label>
+                        <input type="number" id="mon_duration" placeholder="请输入执行时长">
+                    </div>
+                    <div class="form-group">
+                        <label>执行次数/组数 <span class="required">*</span></label>
+                        <input type="number" id="mon_times" placeholder="请输入执行次数">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>训练强度</label>
+                        <select id="mon_intensity">
+                            <option value="">请选择</option>
+                            <option value="低强度">低强度</option>
+                            <option value="中等强度">中等强度</option>
+                            <option value="高强度">高强度</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>完成质量 <span class="required">*</span></label>
+                        <select id="mon_quality">
+                            <option value="">请选择</option>
+                            <option value="优秀">优秀</option>
+                            <option value="良好">良好</option>
+                            <option value="一般">一般</option>
+                            <option value="待改进">待改进</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>患者配合度</label>
+                        <select id="mon_cooperation">
+                            <option value="">请选择</option>
+                            <option value="积极配合">积极配合</option>
+                            <option value="基本配合">基本配合</option>
+                            <option value="配合一般">配合一般</option>
+                            <option value="配合较差">配合较差</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>训练中血氧(%)</label>
+                        <input type="number" id="mon_spo2" placeholder="请输入血氧饱和度">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>训练后心率(次/分)</label>
+                        <input type="number" id="mon_heart_rate" placeholder="请输入心率">
+                    </div>
+                    <div class="form-group">
+                        <label>不良反应</label>
+                        <select id="mon_adverse">
+                            <option value="">请选择</option>
+                            <option value="无">无</option>
+                            <option value="轻度气促">轻度气促</option>
+                            <option value="胸痛">胸痛</option>
+                            <option value="头晕">头晕</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:2;">
+                        <label>护理观察记录</label>
+                        <textarea id="mon_observation" placeholder="请输入训练过程中的观察记录和注意事项"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal secondary" onclick="closeModal('addMonitor')">取消</button>
+                <button class="btn-modal primary" onclick="saveMonitor()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增效果指标评估弹窗 -->
+    <div class="modal-overlay" id="modal-addEvaluate">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fa fa-chart-line"></i><span id="evalModalTitle">新增效果指标评估</span></h3>
+                <button class="modal-close" onclick="closeModal('addEvaluate')">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="eval_edit_id" value="">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>患者<span class="required">*</span></label>
+                        <select id="eval_patient_id">
+                            <option value="">请选择患者</option>
+                            <!-- <option value="1">王建华 (XK-2024-0156)</option>
+                            <option value="2">李秀英 (XK-2024-0157)</option>
+                            <option value="3">陈志明 (XK-2024-0158)</option>
+                            <option value="4">张美玲 (XK-2024-0159)</option>
+                            <option value="5">刘德强 (XK-2024-0160)</option> -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>评估日期 <span class="required">*</span></label>
+                        <input type="date" id="eval_date">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>血氧饱和度(%) <span class="required">*</span></label>
+                        <input type="number" id="eval_spo2" placeholder="请输入SpO2值" min="80" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label>呼吸频率(次/分) <span class="required">*</span></label>
+                        <input type="number" id="eval_resp_rate" placeholder="请输入呼吸频率" min="10" max="40">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>肺活量(mL)</label>
+                        <input type="number" id="eval_vital_capacity" placeholder="请输入肺活量">
+                    </div>
+                    <div class="form-group">
+                        <label>最大吸气压(cmH2O)</label>
+                        <input type="number" id="eval_mip" placeholder="请输入MIP值">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>6分钟步行距离(m)</label>
+                        <input type="number" id="eval_six_min_walk" placeholder="请输入步行距离">
+                    </div>
+                    <div class="form-group">
+                        <label>疼痛评分(0-10) <span class="required">*</span></label>
+                        <select id="eval_pain_score">
+                            <option value="">请选择</option>
+                            <option value="0">0分 - 无痛</option>
+                            <option value="1">1分</option>
+                            <option value="2">2分</option>
+                            <option value="3">3分 - 轻度疼痛</option>
+                            <option value="4">4分</option>
+                            <option value="5">5分</option>
+                            <option value="6">6分 - 中度疼痛</option>
+                            <option value="7">7分</option>
+                            <option value="8">8分</option>
+                            <option value="9">9分</option>
+                            <option value="10">10分 - 剧烈疼痛</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>咳嗽有效性</label>
+                        <select id="eval_cough_effect">
+                            <option value="">请选择</option>
+                            <option value="有效">有效</option>
+                            <option value="较有效">较有效</option>
+                            <option value="一般">一般</option>
+                            <option value="无效">无效</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>痰液性状</label>
+                        <select id="eval_sputum">
+                            <option value="">请选择</option>
+                            <option value="无痰">无痰</option>
+                            <option value="少量白色稀痰">少量白色稀痰</option>
+                            <option value="中量黄色粘痰">中量黄色粘痰</option>
+                            <option value="大量脓痰">大量脓痰</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>活动耐力评级</label>
+                        <select id="eval_activity">
+                            <option value="">请选择</option>
+                            <option value="I级">I级 - 可正常活动</option>
+                            <option value="II级">II级 - 轻度受限</option>
+                            <option value="III级">III级 - 中度受限</option>
+                            <option value="IV级">IV级 - 严重受限</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>评估结果 <span class="required">*</span></label>
+                        <select id="eval_result">
+                            <option value="">请选择</option>
+                            <option value="显著改善">显著改善</option>
+                            <option value="有所改善">有所改善</option>
+                            <option value="基本稳定">基本稳定</option>
+                            <option value="需要关注">需要关注</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:2;">
+                        <label>评估分析说明</label>
+                        <textarea id="eval_note" placeholder="请输入本次评估的分析说明和护理建议"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal secondary" onclick="closeModal('addEvaluate')">取消</button>
+                <button class="btn-modal primary" onclick="saveEvaluate()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增溯源分析弹窗 -->
+    <div class="modal-overlay" id="modal-addTrace">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fa fa-search"></i> <span id="traceModalTitle">新建溯源分析</span></h3>
+                <button class="modal-close" onclick="closeModal('addTrace')">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="trace_edit_id" value="">
+                <div class="form-row">
+                    <div class="form-group" style="flex:2;">
+                        <label>分析主题 <span class="required">*</span></label>
+                        <input type="text" id="trace_theme" placeholder="请输入分析主题，如：某患者术后康复效果追踪">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>分析类型 <span class="required">*</span></label>
+                        <select id="trace_type">
+                            <option value="">请选择</option>
+                            <option value="个案分析">个案分析</option>
+                            <option value="对比分析">对比分析</option>
+                            <option value="趋势分析">趋势分析</option>
+                            <option value="关联分析">关联分析</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>分析对象</label>
+                        <select id="trace_target_type">
+                            <option value="">请选择</option>
+                            <option value="single">单个患者</option>
+                            <option value="multiple">多个患者</option>
+                            <option value="group">患者群组</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>选择患者</label>
+                        <select id="trace_patient_ids" multiple>
+                            <option value="">请选择患者(可多选)</option>
+                        </select>
+                        <small style="font-size:11px;">按住Ctrl多选</small>
+                    </div>
+                    <div class="form-group">
+                        <label>诊断类型筛选</label>
+                        <select id="trace_diagnosis">
+                            <option value="">全部诊断</option>
+                            <option value="肺癌">肺癌</option>
+                            <option value="冠心病">冠心病</option>
+                            <option value="食管癌">食管癌</option>
+                            <option value="心脏瓣膜病">心脏瓣膜病</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>分析开始日期 <span class="required">*</span></label>
+                        <input type="date" id="trace_start_date">
+                    </div>
+                    <div class="form-group">
+                        <label>分析结束日期 <span class="required">*</span></label>
+                        <input type="date" id="trace_end_date">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>康复行为类型</label>
+                        <select id="trace_behavior">
+                            <option value="">全部类型</option>
+                            <option value="呼吸训练">呼吸训练</option>
+                            <option value="咳嗽排痰">咳嗽排痰</option>
+                            <option value="早期下床活动">早期下床活动</option>
+                            <option value="呼吸功能锻炼">呼吸功能锻炼</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>效果指标选择</label>
+                        <select id="trace_effect">
+                            <option value="">请选择关注指标</option>
+                            <option value="血氧饱和度">血氧饱和度</option>
+                            <option value="肺活量">肺活量</option>
+                            <option value="6分钟步行">6分钟步行距离</option>
+                            <option value="疼痛评分">疼痛评分</option>
+                            <option value="综合指标">综合指标</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>分析维度</label>
+                        <select id="trace_dimension">
+                            <option value="">请选择</option>
+                            <option value="时间维度">时间维度(按天/周)</option>
+                            <option value="行为维度">行为维度(按训练类型)</option>
+                            <option value="效果维度">效果维度(按指标变化)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>报告输出格式</label>
+                        <select id="trace_format">
+                            <option value="">请选择</option>
+                            <option value="图表+文字">图表+文字分析</option>
+                            <option value="纯文字">纯文字报告</option>
+                            <option value="数据表格">数据表格</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:2;">
+                        <label>分析目的说明</label>
+                        <textarea id="trace_purpose" placeholder="请输入本次溯源分析的目的和预期结果"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal secondary" onclick="closeModal('addTrace')">取消</button>
+                <button class="btn-modal primary" onclick="saveTrace()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 查看详情弹窗 -->
+    <div class="modal-overlay" id="modal-viewDetail">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="viewDetailTitle"><i class="fa fa-info-circle"></i> 详细信息</h3>
+                <button class="modal-close" onclick="closeModal('viewDetail')">×</button>
+            </div>
+            <div class="modal-body" id="viewDetailContent">
+                <!-- 动态填充内容 -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal secondary" onclick="closeModal('viewDetail')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认删除弹窗 -->
+    <div class="modal-overlay" id="modal-confirmDelete">
+        <div class="modal" style="min-width:400px;">
+            <div class="modal-header">
+                <h3><i class="fa fa-exclamation-triangle"></i> 确认删除</h3>
+                <button class="modal-close" onclick="closeModal('confirmDelete')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="confirm-content">
+                    <i class="fa fa-question-circle"></i>
+                    <p>确定要删除选中的记录吗？此操作不可恢复。</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal secondary" onclick="closeModal('confirmDelete')">取消</button>
+                <button class="btn-modal primary" onclick="confirmDelete()">确定删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导出成功弹窗 -->
+    <div class="modal-overlay" id="modal-exportSuccess">
+        <div class="modal" style="min-width:400px;">
+            <div class="modal-header">
+                <h3><i class="fa fa-check-circle"></i> 导出成功</h3>
+                <button class="modal-close" onclick="closeModal('exportSuccess')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="confirm-content">
+                    <i class="fa fa-check-circle" style="color:#28a745;"></i>
+                    <p>数据已成功导出为Excel文件！</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal primary" onclick="closeModal('exportSuccess')">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 保存成功弹窗 -->
+    <div class="modal-overlay" id="modal-saveSuccess">
+        <div class="modal" style="min-width:400px;">
+            <div class="modal-header">
+                <h3><i class="fa fa-check-circle"></i> 保存成功</h3>
+                <button class="modal-close" onclick="closeModal('saveSuccess')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="confirm-content">
+                    <i class="fa fa-check-circle" style="color:#28a745;"></i>
+                    <p>数据已成功保存！</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal primary" onclick="closeModal('saveSuccess')">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ----------------------------- 全局配置 -----------------------------
+        const API_BASE = 'http://192.168.179.229:3000/api';
+
+        // 通用请求函数
+        async function apiRequest(url, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE}${url}`, {
+                    headers: { 'Content-Type': 'application/json' },
+                    ...options
+                });
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.error || `HTTP ${response.status}`);
+                }
+                return response.json();
+            } catch (err) {
+                // 网络断开或超时
+                console.error('apiRequest 捕获错误:', err);
+                if (err.name === 'TypeError' && err.message.includes('fetch')) {
+                    throw new Error('网络连接失败，请检查后端服务是否启动');
+                }
+                throw err;
+            }
+        }
+
+        function showMsg(msg, isErr = false) {
+            alert(msg);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function downloadFile(url) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = ''; // 让浏览器自动命名文件
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        // 加载患者下拉列表（用于监测、评估弹窗）
+        // 加载患者下拉列表（单选）
+        async function loadPatientSelect(selectId, selectedId = null) {
+            try {
+                const res = await apiRequest('/patients/?limit=1000');
+                const select = document.getElementById(selectId);
+                if (!select) return;
+                select.innerHTML = '<option value="">请选择患者</option>';
+                res.data.forEach(p => {
+                    const option = document.createElement('option');
+                    option.value = p.id;
+                    option.textContent = `${p.name} (${p.hospitalization_id})`;
+                    if (selectedId && p.id == selectedId) option.selected = true;
+                    select.appendChild(option);
+                });
+            } catch (err) {
+                console.error('加载患者列表失败', err);
+            }
+        }
+
+        // 加载患者下拉列表（多选，用于溯源分析）
+        async function loadPatientMultiSelect(selectId) {
+            try {
+                const res = await apiRequest('/patients/?limit=1000');
+                const select = document.getElementById(selectId);
+                if (!select) return;
+                select.innerHTML = '<option value="">请选择患者(可多选)</option>';
+                res.data.forEach(p => {
+                    const option = document.createElement('option');
+                    option.value = p.id;
+                    option.textContent = `${p.name} (${p.hospitalization_id})`;
+                    select.appendChild(option);
+                });
+            } catch (err) {
+                console.error('加载患者列表失败', err);
+            }
+        }
+
+        // ----------------------------- 导航与分页 -----------------------------
+        let currentPage = { patient: 1, monitor: 1, evaluate: 1, trace: 1 };
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function () {
+                const page = this.getAttribute('data-page');
+                switchPage(page);
+            });
+        });
+        document.querySelectorAll('.module-card').forEach(card => {
+            card.addEventListener('click', function () {
+                const page = this.getAttribute('data-page');
+                switchPage(page);
+            });
+        });
+
+        function switchPage(pageName) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-page') === pageName) item.classList.add('active');
+            });
+            document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
+            document.querySelector('.home-container').classList.remove('active');
+
+            if (pageName === 'home') {
+                document.querySelector('.home-container').classList.add('active');
+            } else {
+                const target = document.getElementById('page-' + pageName);
+                if (target) target.classList.add('active');
+                if (pageName === 'patient') loadPatients(currentPage.patient);
+                else if (pageName === 'monitor') loadMonitors(currentPage.monitor);
+                else if (pageName === 'evaluate') loadEvaluations(currentPage.evaluate);
+                else if (pageName === 'trace') loadTraces(currentPage.trace);
+            }
+        }
+
+        function goHome() { switchPage('home'); }
+
+        // 通用分页渲染（简化版）
+        function renderPagination(module, pagination, loadFunc) {
+            const container = document.querySelector(`#page-${module} .pagination`);
+            if (!container) return;
+            const totalPages = pagination.totalPages;
+            let current = pagination.page;
+            let html = '';
+            html += `<button onclick="switchPageNum('${module}', 1)" ${current === 1 ? 'disabled' : ''}><i class="fa fa-angle-double-left"></i></button>`;
+            html += `<button onclick="switchPageNum('${module}', ${current - 1})" ${current === 1 ? 'disabled' : ''}><i class="fa fa-angle-left"></i></button>`;
+            for (let i = Math.max(1, current - 2); i <= Math.min(totalPages, current + 2); i++) {
+                html += `<button class="${i === current ? 'active' : ''}" onclick="switchPageNum('${module}', ${i})">${i}</button>`;
+            }
+            html += `<button onclick="switchPageNum('${module}', ${current + 1})" ${current === totalPages ? 'disabled' : ''}><i class="fa fa-angle-right"></i></button>`;
+            html += `<button onclick="switchPageNum('${module}', ${totalPages})" ${current === totalPages ? 'disabled' : ''}><i class="fa fa-angle-double-right"></i></button>`;
+            html += `<span class="pagination-info">共 ${pagination.total} 条记录 | 第 ${current}/${totalPages} 页</span>`;
+            container.innerHTML = html;
+            window.switchPageNum = function (module, page) {
+                currentPage[module] = page;
+                if (module === 'patient') loadPatients(page);
+                else if (module === 'monitor') loadMonitors(page);
+                else if (module === 'evaluate') loadEvaluations(page);
+                else if (module === 'trace') loadTraces(page);
+            };
+        }
+
+        // ========================= 患者管理模块 =========================
+        async function loadPatients(page = 1) {
+            currentPage.patient = page;
+            const search = document.getElementById('patientSearch')?.value || '';
+            const stage = document.getElementById('patientStageFilter')?.value || '';
+            try {
+                const res = await apiRequest(`/patients/?page=${page}&limit=10&search=${search}&stage=${stage}`);
+                renderPatientTable(res.data, res);
+            } catch (err) {
+                showMsg('加载患者失败：' + err.message, true);
+            }
+        }
+
+        function renderPatientTable(patients, pagination) {
+            const tbody = document.querySelector('#patientTable tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (!patients.length) {
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;">暂无数据</td></tr>';
+                renderPagination('patient', pagination, loadPatients);
+                return;
+            }
+            patients.forEach((p, idx) => {
+                const row = tbody.insertRow();
+                const riskClass = p.risk_level === '高危' ? 'high' : (p.risk_level === '低危' ? 'low' : 'medium');
+                row.setAttribute('data-id', p.id);
+                row.innerHTML = `
+                    <td>${(pagination.page - 1) * pagination.limit + idx + 1}</td>
+                    <td>${escapeHtml(p.hospitalization_id)}</td>
+                    <td>${escapeHtml(p.name)}</td>
+                    <td>${escapeHtml(p.gender)}</td>
+                    <td>${p.age}</td>
+                    <td>${escapeHtml(p.diagnosis)}</td>
+                    <td>${escapeHtml(p.surgery_name)}</td>
+                    <td>${p.surgery_date || ''}</td>
+                    <td>${p.postop_days_text || ''}</td>
+                    <td>${escapeHtml(p.recovery_stage)}</td>
+                    <td><span class="level-tag ${riskClass}">${escapeHtml(p.risk_level)}</span></td>
+                    <td>
+                        <span class="action-link" onclick="viewPatient(${p.id})">查看</span>
+                        <span class="action-link" onclick="editPatient(${p.id})">编辑</span>
+                     </td>
+                `;
+                row.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('action-link')) return;
+                    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
+                    row.classList.add('selected');
+                });
+            });
+            renderPagination('patient', pagination, loadPatients);
+        }
+
+        window.viewPatient = async function (id) {
+            try {
+                const p = await apiRequest(`/patients/${id}`);
+                const content = `
+                    <table class="detail-table">
+                        <tr><th>住院号</th><td>${escapeHtml(p.hospitalization_id)}</td><th>姓名</th><td>${escapeHtml(p.name)}</td></tr>
+                        <tr><th>性别</th><td>${escapeHtml(p.gender)}</td><th>年龄</th><td>${p.age}</td></tr>
+                        <tr><th>诊断</th><td colspan="3">${escapeHtml(p.diagnosis)}</td></tr>
+                        <tr><th>手术名称</th><td colspan="3">${escapeHtml(p.surgery_name)}</td></tr>
+                        <tr><th>手术日期</th><td>${p.surgery_date || ''}</td><th>主刀医生</th><td>${escapeHtml(p.surgeon || '')}</td></tr>
+                        <tr><th>康复阶段</th><td>${escapeHtml(p.recovery_stage)}</td><th>风险等级</th><td>${escapeHtml(p.risk_level)}</td></tr>
+                        <tr><th>既往病史</th><td colspan="3">${escapeHtml(p.medical_history || '')}</td></tr>
+                        <tr><th>备注</th><td colspan="3">${escapeHtml(p.notes || '')}</td></tr>
+                    </table>
+                `;
+                document.getElementById('viewDetailTitle').innerHTML = '<i class="fa fa-user"></i> 患者详细信息';
+                document.getElementById('viewDetailContent').innerHTML = content;
+                openModal('viewDetail');
+            } catch (err) {
+                showMsg('加载详情失败', true);
+            }
+        };
+
+        window.editPatient = async function (id) {
+            try {
+                const p = await apiRequest(`/patients/${id}`);
+                document.getElementById('patientModalTitle').innerText = '编辑患者';
+                document.getElementById('pat_edit_id').value = p.id;
+                document.getElementById('pat_hospitalization_id').value = p.hospitalization_id;
+                document.getElementById('pat_name').value = p.name;
+                document.getElementById('pat_gender').value = p.gender;
+                document.getElementById('pat_age').value = p.age;
+                document.getElementById('pat_diagnosis').value = p.diagnosis;
+                document.getElementById('pat_surgery_name').value = p.surgery_name;
+                document.getElementById('pat_surgery_date').value = p.surgery_date || '';
+                document.getElementById('pat_surgeon').value = p.surgeon || '';
+                document.getElementById('pat_anesthesia_type').value = p.anesthesia_type || '';
+                document.getElementById('pat_incision_type').value = p.incision_type || '';
+                document.getElementById('pat_recovery_stage').value = p.recovery_stage || '';
+                document.getElementById('pat_risk_level').value = p.risk_level || '';
+                document.getElementById('pat_medical_history').value = p.medical_history || '';
+                document.getElementById('pat_notes').value = p.notes || '';
+                openModal('addPatient');
+            } catch (err) {
+                showMsg('加载患者信息失败', true);
+            }
+        };
+
+        window.savePatient = async function () {
+            const id = document.getElementById('pat_edit_id').value;
+            const data = {
+                hospitalization_id: document.getElementById('pat_hospitalization_id').value,
+                name: document.getElementById('pat_name').value,
+                gender: document.getElementById('pat_gender').value,
+                age: parseInt(document.getElementById('pat_age').value),
+                diagnosis: document.getElementById('pat_diagnosis').value,
+                surgery_name: document.getElementById('pat_surgery_name').value,
+                surgery_date: document.getElementById('pat_surgery_date').value,
+                surgeon: document.getElementById('pat_surgeon').value,
+                anesthesia_type: document.getElementById('pat_anesthesia_type').value,
+                incision_type: document.getElementById('pat_incision_type').value,
+                recovery_stage: document.getElementById('pat_recovery_stage').value || '术后早期',
+                risk_level: document.getElementById('pat_risk_level').value || '中危',
+                medical_history: document.getElementById('pat_medical_history').value,
+                notes: document.getElementById('pat_notes').value
+            };
+            if (!data.hospitalization_id || !data.name || !data.gender || !data.age || !data.diagnosis || !data.surgery_name || !data.surgery_date) {
+                showMsg('请填写所有必填项', true);
+                return;
+            }
+            try {
+                if (id) {
+                    await apiRequest(`/patients/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+                    showMsg('更新成功');
+                } else {
+                    await apiRequest('/patients/', { method: 'POST', body: JSON.stringify(data) });
+                    showMsg('添加成功');
+                }
+                closeModal('addPatient');
+                document.getElementById('patientModalTitle').innerText = '新增患者';
+                document.getElementById('pat_edit_id').value = '';
+                loadPatients(currentPage.patient);
+            } catch (err) {
+                showMsg('保存失败：' + err.message, true);
+            }
+        };
+
+        window.deleteSelected = async function (module) {
+            if (module === 'patient') {
+                const selectedRow = document.querySelector('#patientTable tbody tr.selected');
+                if (!selectedRow) {
+                    showMsg('请先选中要删除的行', true);
+                    return;
+                }
+                const patientId = selectedRow.getAttribute('data-id');
+                if (!patientId) {
+                    showMsg('无法获取患者ID', true);
+                    return;
+                }
+                if (confirm('确定删除该患者吗？')) {
+                    try {
+                        await apiRequest(`/patients/`, { method: 'DELETE', body: JSON.stringify({ ids: [patientId] }) });
+                        showMsg('删除成功');
+                        loadPatients(currentPage.patient);
+                    } catch (err) {
+                        showMsg('删除失败：' + err.message, true);
+                    }
+                }
+            } else if (module === 'monitor') {
+                const selectedRow = document.querySelector('#monitorTable tbody tr.selected');
+                if (!selectedRow) {
+                    showMsg('请先选中要删除的行', true);
+                    return;
+                }
+                const monitorId = selectedRow.getAttribute('data-id');
+                if (!monitorId) {
+                    showMsg('无法获取监测记录ID', true);
+                    return;
+                }
+                if (confirm('确定删除该康复监测记录吗？')) {
+                    try {
+                        await apiRequest(`/monitors/`, { method: 'DELETE', body: JSON.stringify({ ids: [monitorId] }) });
+                        showMsg('删除成功');
+                        loadMonitors(currentPage.monitor);
+                    } catch (err) {
+                        showMsg('删除失败：' + err.message, true);
+                    }
+                }
+            } else if (module === 'evaluate') {
+                const selectedRow = document.querySelector('#evaluateTable tbody tr.selected');
+                if (!selectedRow) {
+                    showMsg('请先选中要删除的行', true);
+                    return;
+                }
+                const evaluateId = selectedRow.getAttribute('data-id');
+                if (!evaluateId) {
+                    showMsg('无法获取评估记录ID', true);
+                    return;
+                }
+                if (confirm('确定删除该效果评估记录吗？')) {
+                    try {
+                        await apiRequest(`/evaluations/`, { method: 'DELETE', body: JSON.stringify({ ids: [evaluateId] }) });
+                        showMsg('删除成功');
+                        loadEvaluations(currentPage.evaluate);
+                    } catch (err) {
+                        showMsg('删除失败：' + err.message, true);
+                    }
+                }
+            } else if (module === 'trace') {
+                const selectedRow = document.querySelector('#traceTable tbody tr.selected');
+                if (!selectedRow) {
+                    showMsg('请先选中要删除的行', true);
+                    return;
+                }
+                const traceId = selectedRow.getAttribute('data-id');
+                if (!traceId) {
+                    showMsg('无法获取溯源分析记录ID', true);
+                    return;
+                }
+                if (confirm('确定删除该溯源分析记录吗？')) {
+                    try {
+                        await apiRequest(`/traces/`, { method: 'DELETE', body: JSON.stringify({ ids: [traceId] }) });
+                        showMsg('删除成功');
+                        loadTraces(currentPage.trace);
+                    } catch (err) {
+                        showMsg('删除失败：' + err.message, true);
+                    }
+                }
+            } else {
+                showMsg('该模块删除暂未实现，可参照患者模块自行添加', true);
+            }
+        };
+
+        window.exportData = function (module) {
+            if (module === 'patient') {
+                const search = document.getElementById('patientSearch')?.value || '';
+                const stage = document.getElementById('patientStageFilter')?.value || '';
+                // window.open(`${API_BASE}/patients/export/csv?search=${encodeURIComponent(search)}&stage=${encodeURIComponent(stage)}`, '_blank');
+                // 导出改用隐藏下载链接（避免弹窗拦截）
+                const url = `${API_BASE}/patients/export/csv?search=${encodeURIComponent(search)}&stage=${encodeURIComponent(stage)}`;
+                downloadFile(url);
+                openModal('exportSuccess');
+            } else if (module === 'monitor') {
+                const search = document.getElementById('monitorSearch')?.value || '';
+                const type = document.getElementById('monitorTypeFilter')?.value || '';
+                const url = `${API_BASE}/monitors/export/csv?search=${encodeURIComponent(search)}&type=${encodeURIComponent(type)}`;
+                downloadFile(url);
+                openModal('exportSuccess');
+            }
+            else if (module === 'evaluate') {
+                const search = document.getElementById('evaluateSearch')?.value || '';
+                const result = document.getElementById('evaluateResultFilter')?.value || '';
+                const url = `${API_BASE}/evaluations/export/csv?search=${encodeURIComponent(search)}&result=${encodeURIComponent(result)}`;
+                downloadFile(url);
+                openModal('exportSuccess');
+            } else if (module === 'trace') {
+                const search = document.getElementById('traceSearch')?.value || '';
+                const type = document.getElementById('traceTypeFilter')?.value || '';
+                const url = `${API_BASE}/traces/export/csv?search=${encodeURIComponent(search)}&type=${encodeURIComponent(type)}`;
+                downloadFile(url);
+                openModal('exportSuccess');
+            }
+            // 评估和溯源导出可类似添加，后端需实现相应导出接口
+        };
+
+        window.searchPatient = function () { loadPatients(1); };
+
+        // ========================= 康复行为监测模块 =========================
+        async function loadMonitors(page = 1) {
+            currentPage.monitor = page;
+            const search = document.getElementById('monitorSearch')?.value || '';
+            const type = document.getElementById('monitorTypeFilter')?.value || '';
+            try {
+                const res = await apiRequest(`/monitors/?page=${page}&limit=10&search=${search}&type=${type}`);
+                renderMonitorTable(res.data, res);
+            } catch (err) {
+                showMsg('加载监测记录失败：' + err.message, true);
+            }
+        }
+
+        function renderMonitorTable(monitors, pagination) {
+            const tbody = document.querySelector('#monitorTable tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (!monitors.length) {
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;">暂无数据</td></tr>';
+                renderPagination('monitor', pagination, loadMonitors);
+                return;
+            }
+            monitors.forEach((m, idx) => {
+                const row = tbody.insertRow();
+                row.setAttribute('data-id', m.id);
+                let qualityClass = '';
+                if (m.quality === '优秀') qualityClass = 'excellent';
+                else if (m.quality === '良好') qualityClass = 'good';
+                else if (m.quality === '一般') qualityClass = 'normal';
+                else qualityClass = 'poor';
+                row.innerHTML = `
+            <td>${(pagination.page - 1) * pagination.limit + idx + 1}</td>
+            <td>${escapeHtml(m.record_no)}</td>
+            <td>${escapeHtml(m.patient_name)}</td>
+            <td>${escapeHtml(m.hospitalization_id)}</td>
+            <td>${escapeHtml(m.training_type)}</td>
+            <td>${m.monitor_datetime || ''}</td>
+            <td>${m.duration_minutes ? m.duration_minutes + '分钟' : ''}</td>
+            <td>${m.execution_times ? m.execution_times + '组' : ''}</td>
+            <td><span class="status-tag ${qualityClass}">${escapeHtml(m.quality)}</span></td>
+            <td>${escapeHtml(m.nurse_name)}</td>
+            <td>
+                <span class="action-link" onclick="viewMonitor(${m.id})">查看</span>
+                <span class="action-link" onclick="editMonitor(${m.id})">编辑</span>
+            </td>
+        `;
+                row.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('action-link')) return;
+                    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
+                    row.classList.add('selected');
+                });
+            });
+            renderPagination('monitor', pagination, loadMonitors);
+        }
+
+        // 查看监测记录详情
+        window.viewMonitor = async function (id) {
+            try {
+                const m = await apiRequest(`/monitors/${id}`);
+                const content = `
+            <table class="detail-table">
+                <tr><th>记录编号</th><td>${escapeHtml(m.record_no)}</td><th>患者姓名</th><td>${escapeHtml(m.patient_name)}</td></tr>
+                <tr><th>住院号</th><td>${escapeHtml(m.hospitalization_id)}</td><th>训练类型</th><td>${escapeHtml(m.training_type)}</td></tr>
+                <tr><th>监测时间</th><td>${m.monitor_datetime || ''}</td><th>执行时长</th><td>${m.duration_minutes}分钟</td></tr>
+                <tr><th>执行次数</th><td>${m.execution_times}组</td><th>训练强度</th><td>${escapeHtml(m.intensity || '')}</td></tr>
+                <tr><th>完成质量</th><td>${escapeHtml(m.quality)}</td><th>患者配合度</th><td>${escapeHtml(m.cooperation || '')}</td></tr>
+                <tr><th>血氧饱和度</th><td>${m.spo2 || ''}%</td><th>心率</th><td>${m.heart_rate || ''}次/分</td></tr>
+                <tr><th>不良反应</th><td colspan="3">${escapeHtml(m.adverse_reaction || '无')}</td></tr>
+                <tr><th>护理观察</th><td colspan="3">${escapeHtml(m.nurse_observation || '')}</td></tr>
+                <tr><th>指导护士</th><td colspan="3">${escapeHtml(m.nurse_name)}</td></tr>
+            </table>
+        `;
+                document.getElementById('viewDetailTitle').innerHTML = '<i class="fa fa-clipboard-check"></i> 康复行为监测详情';
+                document.getElementById('viewDetailContent').innerHTML = content;
+                openModal('viewDetail');
+            } catch (err) {
+                showMsg('加载详情失败', true);
+            }
+        };
+
+        // 编辑监测记录（打开弹窗并填充数据）
+        window.editMonitor = async function (id) {
+            try {
+                const m = await apiRequest(`/monitors/${id}`);
+                // 填充隐藏编辑ID
+                document.getElementById('mon_edit_id').value = m.id;
+                document.getElementById('monitorModalTitle').innerText = '编辑康复行为监测记录';
+
+                // 患者下拉列表（需要先加载所有患者，并选中当前患者）
+                await loadPatientSelect('mon_patient_id', m.patient_id);
+                // 其它表单字段
+                document.getElementById('mon_training_type').value = m.training_type || '';
+                if (m.monitor_datetime) {
+                    const [date, time] = m.monitor_datetime.split(' ');
+                    document.getElementById('mon_date').value = date || '';
+                    document.getElementById('mon_time').value = time || '';
+                }
+                document.getElementById('mon_duration').value = m.duration_minutes || '';
+                document.getElementById('mon_times').value = m.execution_times || '';
+                document.getElementById('mon_intensity').value = m.intensity || '';
+                document.getElementById('mon_quality').value = m.quality || '';
+                document.getElementById('mon_cooperation').value = m.cooperation || '';
+                document.getElementById('mon_spo2').value = m.spo2 || '';
+                document.getElementById('mon_heart_rate').value = m.heart_rate || '';
+                document.getElementById('mon_adverse').value = m.adverse_reaction || '';
+                document.getElementById('mon_observation').value = m.nurse_observation || '';
+
+                openModal('addMonitor');
+            } catch (err) {
+                showMsg('加载监测记录失败', true);
+            }
+        };
+
+        // 保存监测记录（新增或更新）
+        window.saveMonitor = async function () {
+            const id = document.getElementById('mon_edit_id').value;
+            const patient_id = document.getElementById('mon_patient_id').value;
+            if (!patient_id) { showMsg('请选择患者', true); return; }
+
+            // 从下拉列表中获取患者姓名和住院号
+            // let patient_name = '', hospitalization_id = '';
+            // const select = document.getElementById('mon_patient_id');
+            // const selectedOption = select.options[select.selectedIndex];
+            // if (selectedOption && selectedOption.value) {
+            //     const text = selectedOption.text;
+            //     const match = text.match(/(.+)\s\((.+)\)/);
+            //     if (match) { patient_name = match[1]; hospitalization_id = match[2]; }
+            // }
+
+            const monitor_datetime = `${document.getElementById('mon_date').value} ${document.getElementById('mon_time').value}`;
+            if (!monitor_datetime.trim()) { showMsg('请填写监测日期和时间', true); return; }
+
+            const data = {
+                patient_id: parseInt(patient_id),
+                monitor_datetime: monitor_datetime,
+                // patient_name: patient_name,
+                // hospitalization_id: hospitalization_id,
+                training_type: document.getElementById('mon_training_type').value,
+                duration_minutes: parseInt(document.getElementById('mon_duration').value) || null,
+                execution_times: parseInt(document.getElementById('mon_times').value) || null,
+                intensity: document.getElementById('mon_intensity').value,
+                quality: document.getElementById('mon_quality').value,
+                cooperation: document.getElementById('mon_cooperation').value,
+                spo2: parseInt(document.getElementById('mon_spo2').value) || null,
+                heart_rate: parseInt(document.getElementById('mon_heart_rate').value) || null,
+                adverse_reaction: document.getElementById('mon_adverse').value,
+                nurse_observation: document.getElementById('mon_observation').value,
+                nurse_name: '张楠'
+            };
+            if (!data.training_type) { showMsg('请选择训练类型', true); return; }
+
+            try {
+                if (id) {
+                    await apiRequest(`/monitors/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+                    showMsg('更新成功');
+                } else {
+                    await apiRequest('/monitors/', { method: 'POST', body: JSON.stringify(data) });
+                    showMsg('添加成功');
+                }
+                closeModal('addMonitor');
+                // 重置表单标题和隐藏ID
+                document.getElementById('monitorModalTitle').innerText = '新增康复行为监测记录';
+                document.getElementById('mon_edit_id').value = '';
+                // 清空表单
+                document.getElementById('mon_patient_id').value = '';
+                document.getElementById('mon_training_type').value = '';
+                document.getElementById('mon_date').value = '';
+                document.getElementById('mon_time').value = '';
+                document.getElementById('mon_duration').value = '';
+                document.getElementById('mon_times').value = '';
+                document.getElementById('mon_intensity').value = '';
+                document.getElementById('mon_quality').value = '';
+                document.getElementById('mon_cooperation').value = '';
+                document.getElementById('mon_spo2').value = '';
+                document.getElementById('mon_heart_rate').value = '';
+                document.getElementById('mon_adverse').value = '';
+                document.getElementById('mon_observation').value = '';
+                loadMonitors(currentPage.monitor);
+            } catch (err) {
+                showMsg('保存失败：' + err.message, true);
+            }
+        };
+
+        window.searchMonitor = function () { loadMonitors(1); };
+
+        // ========================= 效果指标评估模块（完整） =========================
+        // ========================= 效果指标评估模块 =========================
+        async function loadEvaluations(page = 1) {
+            currentPage.evaluate = page;
+            const search = document.getElementById('evaluateSearch')?.value || '';
+            const result = document.getElementById('evaluateResultFilter')?.value || '';
+            try {
+                const res = await apiRequest(`/evaluations/?page=${page}&limit=10&search=${search}&result=${result}`);
+                renderEvaluationTable(res.data, res);
+            } catch (err) {
+                showMsg('加载评估记录失败：' + err.message, true);
+            }
+        }
+
+        function renderEvaluationTable(evaluations, pagination) {
+            const tbody = document.querySelector('#evaluateTable tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (!evaluations.length) {
+                tbody.innerHTML = '</td><td colspan="11" style="text-align:center;">暂无数据</td></tr>';
+                renderPagination('evaluate', pagination, loadEvaluations);
+                return;
+            }
+            evaluations.forEach((e, idx) => {
+                const row = tbody.insertRow();
+                row.setAttribute('data-id', e.id);
+                let resultClass = '';
+                if (e.result === '显著改善') resultClass = 'completed';
+                else if (e.result === '有所改善') resultClass = 'in-progress';
+                else if (e.result === '基本稳定') resultClass = 'pending';
+                else resultClass = 'pending';
+                row.innerHTML = `
+            <td>${(pagination.page - 1) * pagination.limit + idx + 1}</td>
+            <td>${escapeHtml(e.evaluate_no)}</td>
+            <td>${escapeHtml(e.patient_name)}</td>
+            <td>${e.evaluate_date || ''}</td>
+            <td>${e.spo2 ? e.spo2 + '%' : ''}</td>
+            <td>${e.respiratory_rate ? e.respiratory_rate + '次/分' : ''}</td>
+            <td>${e.vital_capacity ? e.vital_capacity + 'mL' : ''}</td>
+            <td>${e.six_min_walk ? e.six_min_walk + 'm' : ''}</td>
+            <td>${e.pain_score ? e.pain_score + '分' : ''}</td>
+            <td><span class="status-tag ${resultClass}">${escapeHtml(e.result)}</span></td>
+            <td>
+                <span class="action-link" onclick="viewEvaluate(${e.id})">查看</span>
+                <span class="action-link" onclick="editEvaluate(${e.id})">编辑</span>
+            </td>
+        `;
+                row.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('action-link')) return;
+                    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
+                    row.classList.add('selected');
+                });
+            });
+            renderPagination('evaluate', pagination, loadEvaluations);
+        }
+
+        window.viewEvaluate = async function (id) {
+            try {
+                const e = await apiRequest(`/evaluations/${id}`);
+                const content = `
+            <table class="detail-table">
+                <tr><th>评估编号</th><td>${escapeHtml(e.evaluate_no)}</td><th>患者姓名</th><td>${escapeHtml(e.patient_name)}</td></tr>
+                <tr><th>评估日期</th><td>${e.evaluate_date || ''}</td><th>血氧饱和度</th><td>${e.spo2 || ''}%</td></tr>
+                <tr><th>呼吸频率</th><td>${e.respiratory_rate || ''}次/分</td><th>肺活量</th><td>${e.vital_capacity || ''}mL</td></tr>
+                <tr><th>最大吸气压</th><td>${e.mip || ''}cmH2O</td><th>6分钟步行</th><td>${e.six_min_walk || ''}m</td></tr>
+                <tr><th>疼痛评分</th><td>${e.pain_score || ''}分</td><th>咳嗽有效性</th><td>${escapeHtml(e.cough_effectiveness || '')}</td></tr>
+                <tr><th>痰液性状</th><td>${escapeHtml(e.sputum_property || '')}</td><th>活动耐力</th><td>${escapeHtml(e.activity_endurance || '')}</td></tr>
+                <tr><th>评估结果</th><td>${escapeHtml(e.result)}</td><th>分析说明</th><td>${escapeHtml(e.analysis_note || '')}</td></tr>
+            </table>
+        `;
+                document.getElementById('viewDetailTitle').innerHTML = '<i class="fa fa-chart-line"></i> 效果评估详情';
+                document.getElementById('viewDetailContent').innerHTML = content;
+                openModal('viewDetail');
+            } catch (err) {
+                showMsg('加载详情失败', true);
+            }
+        };
+
+        window.editEvaluate = async function (id) {
+            try {
+                const e = await apiRequest(`/evaluations/${id}`);
+                await loadPatientSelect('eval_patient_id', e.patient_id);
+                document.getElementById('evalModalTitle').innerText = '编辑效果指标评估';
+                document.getElementById('eval_edit_id').value = e.id;
+                document.getElementById('eval_patient_id').value = e.patient_id;
+                document.getElementById('eval_date').value = e.evaluate_date;
+                document.getElementById('eval_spo2').value = e.spo2;
+                document.getElementById('eval_resp_rate').value = e.respiratory_rate;
+                document.getElementById('eval_vital_capacity').value = e.vital_capacity;
+                document.getElementById('eval_mip').value = e.mip;
+                document.getElementById('eval_six_min_walk').value = e.six_min_walk;
+                document.getElementById('eval_pain_score').value = e.pain_score;
+                document.getElementById('eval_cough_effect').value = e.cough_effectiveness;
+                document.getElementById('eval_sputum').value = e.sputum_property;
+                document.getElementById('eval_activity').value = e.activity_endurance;
+                document.getElementById('eval_result').value = e.result;
+                document.getElementById('eval_note').value = e.analysis_note;
+                openModal('addEvaluate');
+            } catch (err) {
+                showMsg('加载评估记录失败', true);
+            }
+        };
+
+        window.saveEvaluate = async function () {
+            const id = document.getElementById('eval_edit_id').value;
+            const patient_id = document.getElementById('eval_patient_id').value;
+            if (!patient_id) { showMsg('请选择患者', true); return; }
+            // let patient_name = '';
+            // const select = document.getElementById('eval_patient_id');
+            // const selectedOption = select.options[select.selectedIndex];
+            // if (selectedOption && selectedOption.value) {
+            //     patient_name = selectedOption.text.split(' (')[0];   // 取括号前的部分
+            // }
+            const data = {
+                patient_id: parseInt(patient_id),
+                // patient_name: patient_name,
+                evaluate_date: document.getElementById('eval_date').value,
+                spo2: parseInt(document.getElementById('eval_spo2').value) || null,
+                respiratory_rate: parseInt(document.getElementById('eval_resp_rate').value) || null,
+                vital_capacity: parseInt(document.getElementById('eval_vital_capacity').value) || null,
+                mip: parseInt(document.getElementById('eval_mip').value) || null,
+                six_min_walk: parseInt(document.getElementById('eval_six_min_walk').value) || null,
+                pain_score: parseInt(document.getElementById('eval_pain_score').value) || null,
+                cough_effectiveness: document.getElementById('eval_cough_effect').value,
+                sputum_property: document.getElementById('eval_sputum').value,
+                activity_endurance: document.getElementById('eval_activity').value,
+                result: document.getElementById('eval_result').value,
+                analysis_note: document.getElementById('eval_note').value
+            };
+            if (!data.evaluate_date || !data.result) { showMsg('请填写评估日期和评估结果', true); return; }
+            try {
+                if (id) {
+                    await apiRequest(`/evaluations/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+                    showMsg('更新成功');
+                } else {
+                    await apiRequest('/evaluations/', { method: 'POST', body: JSON.stringify(data) });
+                    showMsg('添加成功');
+                }
+                closeModal('addEvaluate');
+                document.getElementById('evalModalTitle').innerText = '新增效果指标评估';
+                document.getElementById('eval_edit_id').value = '';
+                // 清空表单（可选）
+                document.getElementById('eval_patient_id').value = '';
+                document.getElementById('eval_date').value = '';
+                document.getElementById('eval_spo2').value = '';
+                document.getElementById('eval_resp_rate').value = '';
+                document.getElementById('eval_vital_capacity').value = '';
+                document.getElementById('eval_mip').value = '';
+                document.getElementById('eval_six_min_walk').value = '';
+                document.getElementById('eval_pain_score').value = '';
+                document.getElementById('eval_cough_effect').value = '';
+                document.getElementById('eval_sputum').value = '';
+                document.getElementById('eval_activity').value = '';
+                document.getElementById('eval_result').value = '';
+                document.getElementById('eval_note').value = '';
+                loadEvaluations(currentPage.evaluate);
+            } catch (err) {
+                showMsg('保存失败：' + err.message, true);
+            }
+        };
+
+        window.searchEvaluate = function () { loadEvaluations(1); };
+
+        // ========================= 溯源分析模块（完整） =========================
+        // ========================= 溯源分析模块 =========================
+        async function loadTraces(page = 1) {
+            currentPage.trace = page;
+            const search = document.getElementById('traceSearch')?.value || '';
+            const type = document.getElementById('traceTypeFilter')?.value || '';
+            try {
+                const res = await apiRequest(`/traces/?page=${page}&limit=10&search=${search}&type=${type}`);
+                renderTraceTable(res.data, res);
+            } catch (err) {
+                showMsg('加载溯源分析失败：' + err.message, true);
+            }
+        }
+
+        function renderTraceTable(traces, pagination) {
+            const tbody = document.querySelector('#traceTable tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (!traces.length) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">暂无数据</td></tr>';
+                renderPagination('trace', pagination, loadTraces);
+                return;
+            }
+            traces.forEach((t, idx) => {
+                // 在 traces.forEach 循环内部，row.innerHTML 之前增加：
+                let displayNames = '';
+                if (t.patient_names) {
+                    let nameArr = t.patient_names.split(',');
+                    if (nameArr.length > 3) {
+                        displayNames = nameArr.slice(0, 3).join(',') + '等';
+                    } else {
+                        displayNames = t.patient_names;
+                    }
+                } else {
+                    displayNames = '-';
+                }
+                const row = tbody.insertRow();
+                row.setAttribute('data-id', t.id);
+                row.innerHTML = `
+                    <td>${(pagination.page - 1) * pagination.limit + idx + 1}</td>
+                    <td>${escapeHtml(t.analysis_no)}</td>
+                    <td>${escapeHtml(t.theme)}</td>
+                    <td>${escapeHtml(t.analysis_type)}</td>
+                    <td>${displayNames}</td>   <!-- 替换原来的患者数量显示 -->
+                    <td>${t.start_date ? t.start_date + ' ~ ' + t.end_date : ''}</td>
+                    <td>${t.created_at ? t.created_at.split('T')[0] : ''}</td>
+                    <td>${escapeHtml(t.created_by)}</td>
+                    <td><span class="status-tag ${t.status === '已完成' ? 'completed' : 'in-progress'}">${escapeHtml(t.status)}</span></td>
+                    <td>
+                        <span class="action-link" onclick="viewTrace(${t.id})">查看</span>
+                        <span class="action-link" onclick="editTrace(${t.id})">编辑</span>
+                    </td>
+                `;
+                row.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('action-link')) return;
+                    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
+                    row.classList.add('selected');
+                });
+            });
+            renderPagination('trace', pagination, loadTraces);
+        }
+
+        window.viewTrace = async function (id) {
+            try {
+                const t = await apiRequest(`/traces/${id}`);
+                const content = `
+            <table class="detail-table">
+                <tr><th>分析编号</th><td>${escapeHtml(t.analysis_no)}</td><th>主题</th><td>${escapeHtml(t.theme)}</td></tr>
+                <tr><th>分析类型</th><td>${escapeHtml(t.analysis_type)}</td><th>分析对象</th><td>${escapeHtml(t.target_type || '')}</td></tr>
+                <tr><th>分析周期</th><td>${t.start_date || ''} 至 ${t.end_date || ''}</td><th>康复行为类型</th><td>${escapeHtml(t.behavior_type || '')}</td></tr>
+                <tr><th>效果指标</th><td>${escapeHtml(t.effect_index || '')}</td><th>分析维度</th><td>${escapeHtml(t.analysis_dimension || '')}</td></tr>
+                <tr><th>输出格式</th><td>${escapeHtml(t.output_format || '')}</td><th>状态</th><td>${escapeHtml(t.status)}</td></tr>
+                <tr><th>分析人</th><td>${escapeHtml(t.created_by)}</td><th>创建时间</th><td>${t.created_at || ''}</td></tr>
+                <tr><th>目的说明</th><td colspan="3">${escapeHtml(t.purpose || '')}</td></tr>
+            </table>
+        `;
+                document.getElementById('viewDetailTitle').innerHTML = '<i class="fa fa-search"></i> 溯源分析详情';
+                document.getElementById('viewDetailContent').innerHTML = content;
+                openModal('viewDetail');
+            } catch (err) {
+                showMsg('加载详情失败', true);
+            }
+        };
+
+        window.editTrace = async function (id) {
+            try {
+                const t = await apiRequest(`/traces/${id}`);
+                document.getElementById('traceModalTitle').innerText = '编辑溯源分析';
+                document.getElementById('trace_edit_id').value = t.id;
+                document.getElementById('trace_theme').value = t.theme;
+                document.getElementById('trace_type').value = t.analysis_type || '';
+                document.getElementById('trace_target_type').value = t.target_type || '';
+                document.getElementById('trace_start_date').value = t.start_date || '';
+                document.getElementById('trace_end_date').value = t.end_date || '';
+                document.getElementById('trace_behavior').value = t.behavior_type || '';
+                document.getElementById('trace_effect').value = t.effect_index || '';
+                document.getElementById('trace_dimension').value = t.analysis_dimension || '';
+                document.getElementById('trace_format').value = t.output_format || '';
+                document.getElementById('trace_purpose').value = t.purpose || '';
+                document.getElementById('trace_diagnosis').value = t.diagnosis_filter || '';
+
+                // 多选患者回显
+                const patientSelect = document.getElementById('trace_patient_ids');
+                // 先清空所有选项的选中状态
+                Array.from(patientSelect.options).forEach(opt => opt.selected = false);
+                if (t.patient_ids && Array.isArray(t.patient_ids)) {
+                    t.patient_ids.forEach(pid => {
+                        const option = Array.from(patientSelect.options).find(opt => parseInt(opt.value) === pid);
+                        if (option) option.selected = true;
+                    });
+                }
+                openModal('addTrace');
+            } catch (err) {
+                showMsg('加载分析记录失败', true);
+            }
+        };
+
+        window.saveTrace = async function () {
+            const id = document.getElementById('trace_edit_id').value;
+            const patientSelect = document.getElementById('trace_patient_ids');
+            const selectedPatientIds = Array.from(patientSelect.selectedOptions)
+                .filter(opt => opt.value)
+                .map(opt => parseInt(opt.value));
+
+            const data = {
+                theme: document.getElementById('trace_theme').value,
+                analysis_type: document.getElementById('trace_type').value,
+                target_type: document.getElementById('trace_target_type').value,
+                patient_ids: selectedPatientIds,
+                diagnosis_filter: document.getElementById('trace_diagnosis').value,
+                start_date: document.getElementById('trace_start_date').value,
+                end_date: document.getElementById('trace_end_date').value,
+                behavior_type: document.getElementById('trace_behavior').value,
+                effect_index: document.getElementById('trace_effect').value,
+                analysis_dimension: document.getElementById('trace_dimension').value,
+                output_format: document.getElementById('trace_format').value,
+                purpose: document.getElementById('trace_purpose').value
+            };
+            if (!data.theme) { showMsg('请填写分析主题', true); return; }
+            try {
+                if (id) {
+                    await apiRequest(`/traces/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+                    showMsg('更新成功');
+                } else {
+                    await apiRequest('/traces/', { method: 'POST', body: JSON.stringify(data) });
+                    showMsg('创建成功');
+                }
+                closeModal('addTrace');
+                document.getElementById('traceModalTitle').innerText = '新建溯源分析';
+                document.getElementById('trace_edit_id').value = '';
+                // 清空表单（可选）
+                document.getElementById('trace_theme').value = '';
+                document.getElementById('trace_type').value = '';
+                document.getElementById('trace_target_type').value = '';
+                document.getElementById('trace_start_date').value = '';
+                document.getElementById('trace_end_date').value = '';
+                document.getElementById('trace_behavior').value = '';
+                document.getElementById('trace_effect').value = '';
+                document.getElementById('trace_dimension').value = '';
+                document.getElementById('trace_format').value = '';
+                document.getElementById('trace_purpose').value = '';
+                document.getElementById('trace_diagnosis').value = '';
+                // 清空多选框选中状态
+                Array.from(patientSelect.options).forEach(opt => opt.selected = false);
+                loadTraces(currentPage.trace);
+            } catch (err) {
+                showMsg('保存失败：' + err.message, true);
+            }
+        };
+
+        window.searchTrace = function () { loadTraces(1); };
+
+        // ----------------------------- 通用弹窗控制 -----------------------------
+        window.openModal = function (modalName) {
+            document.getElementById('modal-' + modalName).classList.add('active');
+        };
+        window.closeModal = function (modalName) {
+            document.getElementById('modal-' + modalName).classList.remove('active');
+            // 重置编辑模式标题
+            if (modalName === 'addPatient') {
+                document.getElementById('patientModalTitle').innerText = '新增患者';
+                // 清空患者表单
+                const form = document.querySelector('#modal-addPatient .modal-body');
+                form.querySelectorAll('input, select, textarea').forEach(el => {
+                    el.value = '';
+                });
+            }
+
+            if (modalName === 'addMonitor') {
+                document.getElementById('monitorModalTitle').innerText = '新增康复行为监测记录';// 清空监测表单（保留 mon_edit_id 不清空，用于编辑）
+                const form = document.querySelector('#modal-addMonitor .modal-body');
+                form.querySelectorAll('input, select, textarea').forEach(el => {
+                    if (el.id !== 'mon_edit_id') el.value = '';
+                });
+
+            }
+
+            if (modalName === 'addEvaluate') {
+                document.getElementById('evalModalTitle').innerText = '新增效果指标评估';
+                // 清空评估表单
+                const form = document.querySelector('#modal-addEvaluate .modal-body');
+                form.querySelectorAll('input, select, textarea').forEach(el => {
+                    el.value = '';
+                });
+            }
+
+            if (modalName === 'addTrace') {
+                document.getElementById('traceModalTitle').innerText = '新建溯源分析';
+                // 清空溯源表单
+                const form = document.querySelector('#modal-addTrace .modal-body');
+                form.querySelectorAll('input, select, textarea').forEach(el => {
+                    el.value = '';
+                });
+            }
+
+        };
+        window.confirmDelete = function () {
+            closeModal('confirmDelete');
+            // 实际删除由 deleteSelected 完成
+        };
+
+        // 窗口控制
+        document.querySelector('.btn-close')?.addEventListener('click', () => { if (confirm('确定关闭？')) window.close(); });
+        document.querySelector('.btn-minimize')?.addEventListener('click', () => alert('最小化'));
+        document.querySelector('.btn-maximize')?.addEventListener('click', () => alert('最大化'));
+
+        // 页面初始加载患者下拉列表
+        window.addEventListener('DOMContentLoaded', () => {
+            loadPatientMultiSelect('trace_patient_ids');
+            loadPatientSelect('mon_patient_id');
+            loadPatientSelect('eval_patient_id');
+            const activeNav = document.querySelector('.nav-item.active');
+            if (activeNav && activeNav.getAttribute('data-page') === 'patient') loadPatients(1);
+            else loadPatients(1); // 默认加载患者列表
+        });
+    </script>
+</body>
+
+</html>
